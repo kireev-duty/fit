@@ -305,6 +305,15 @@ details.tech[open]{display:flex;flex-direction:column;gap:8px}
       <tr><td class="num">5</td><td>A, вело спокойно, B, вело-интервалы, C</td></tr>
     </table></div>
     <p class="small muted">«Спокойно» = пульс 115–135, можешь говорить фразами. Кегель и дыхание 5 мин — каждый день отдельно, растяжка таза — 2–3 раза в неделю (вкладка «Таз»). Каждая 4-я неделя лёгкая: по 2 подхода вместо 3–4.</p>
+    <h3>Всё тело: что отстаёт первым</h3>
+    <ul class="plain">
+      <li><b>Верх спины и задние плечи</b> (сутулость от компа) — тяга к лицу / разведения в наклоне, тяги.</li>
+      <li><b>Ягодицы</b> «выключаются» от сидения — хип-траст и мосты.</li>
+      <li><b>Хват и предплечья</b> — прогулка фермера, молотки.</li>
+      <li><b>Кор на удержание</b> — Pallof, боковая и копенгагенская планки, фермер.</li>
+      <li><b>Ноги</b> с возрастом уходят первыми — поэтому каждая тренировка начинается с ног.</li>
+    </ul>
+    <p><b>Лестница</b> вместо лифта: подъезд, офис, метро пешком. Бесплатное кардио для ягодиц и икр каждый день.</p>
     <h3>Бег — позже и постепенно</h3>
     <p>Пока основное кардио — велик. Бег начнём через 2 недели подъёмов на носки: 6 раз (1 мин бег + 2 мин шагом), 2 раза в неделю. Ноет голень на следующий день — шаг назад.</p>
     <h2>Еда на набор</h2>
@@ -386,18 +395,29 @@ const EX = {
   rlunge:{t:"db",n:"Выпады назад",img:"Dumbbell_Rear_Lunge",how:["Шагни назад и опустись до касания коленом.","Толкнись передней ногой и вернись."],err:"Корпус падает вперёд.",feel:"Ягодицы."},
   cpush:{t:"bw",n:"Узкие отжимания",img:"Push-Ups_-_Close_Triceps_Position",how:["Руки на ширине плеч или уже.","Локти вдоль тела, опускайся до пола."],err:"Локти в стороны.",feel:"Трицепс."},
   bike:{t:"cardio",n:"Велотренажёр спокойно",img:null,how:["Пульс 115–135. Можешь говорить фразами.","30–45 мин, каждую неделю +5 мин до 60.","На часах запусти «Велотренажёр»."],err:"Уходить в тяжёлый темп — это другая тренировка.",feel:"Лёгкая одышка, без жжения в ногах."},
-  hipflex:{t:"check",n:"Растяжка таза",img:"Kneeling_Hip_Flexor",how:["Выпад на колене: таз вперёд, ягодица задней ноги сжата — 40 с на сторону, 2 раза.","«Лягушка»: на четвереньках колени широко, таз назад — 40 с.","Свободнее таз — лучше в постели и в приседе."],err:"Прогиб в пояснице вместо растяжения бедра.",feel:"Перед бедра, пах."}
+  hipflex:{t:"check",n:"Растяжка таза",img:"Kneeling_Hip_Flexor",how:["Выпад на колене: таз вперёд, ягодица задней ноги сжата — 40 с на сторону, 2 раза.","«Лягушка»: на четвереньках колени широко, таз назад — 40 с.","Свободнее таз — лучше в постели и в приседе."],err:"Прогиб в пояснице вместо растяжения бедра.",feel:"Перед бедра, пах."},
+  curl:{t:"db",n:"Подъём гантелей на бицепс",img:"Dumbbell_Bicep_Curl",how:["Стоя, гантели в опущенных руках, ладони вперёд. Локти прижаты к бокам.","Сгибай руки, поднимая гантели к плечам. Локти на месте.","Медленно опусти до прямых рук. Дома — с гантелями или рюкзаком за ручку."],err:"Раскачка корпусом и локти уходят вперёд — возьми легче.",feel:"Бицепс."},
+  pushdown:{t:"mach",n:"Разгибание на трицепс на блоке",img:"Triceps_Pushdown",how:["Встань к верхнему блоку, ручка у груди, локти прижаты к бокам.","Разгибай руки вниз до конца, сожми трицепс на секунду.","Медленно верни до прямого угла в локтях. Локти не гуляют."],err:"Давить корпусом и разводить локти.",feel:"Задняя часть плеча (трицепс)."},
+  benchdips:{t:"bw",n:"Обратные отжимания от стула",img:"Bench_Dips",how:["Руки на краю стула или дивана за спиной, ноги вперёд.","Опускайся, сгибая локти назад до прямого угла.","Выжмись. Сложнее — ноги прямые или на втором стуле."],err:"Слишком глубоко и плечи вперёд — болят плечи.",feel:"Трицепс."},
+  incline:{t:"db",n:"Жим гантелей на наклонной скамье",img:"Incline_Dumbbell_Press",how:["Скамья под углом 30°, лопатки сведены, стопы на полу.","Опускай гантели к верху груди, локти под ~45°.","Выжми вверх, гантели сходятся над грудью."],err:"Слишком высокий угол — работают плечи, а не грудь.",feel:"Верх груди."},
+  pushfeet:{t:"bw",n:"Отжимания с ногами на диване",img:"Push-Ups_With_Feet_Elevated",how:["Ноги на диване или стуле, руки чуть шире плеч, тело прямое.","Опускайся грудью к полу.","Выжмись. Тяжело — обычные отжимания."],err:"Таз провисает или торчит вверх.",feel:"Верх груди, плечи, трицепс."},
+  lateral:{t:"db",n:"Махи гантелями в стороны",img:"Side_Lateral_Raise",how:["Стоя, гантели у бёдер, локти чуть согнуты.","Поднимай руки в стороны до уровня плеч, мизинец чуть выше большого пальца.","Медленно опусти. Лёгкий вес — это нормально. Дома — бутылки с водой."],err:"Рывки и подъём плеч к ушам.",feel:"Средняя дельта (ширина плеч)."},
+  hammer:{t:"db",n:"Молотки",img:"Hammer_Curls",how:["Гантели в руках ладонями к телу, как держишь молоток.","Сгибай руки, локти прижаты.","Медленно опусти."],err:"Раскачка корпусом.",feel:"Бицепс и предплечье."},
+  facepull:{t:"mach",n:"Тяга к лицу на блоке",img:"Face_Pull",how:["Верхний блок с канатом на уровне лица, хват сверху.","Тяни канат к лицу, разводя концы в стороны, локти высоко. Сведи лопатки на секунду.","Медленно верни. Вес лёгкий, работают задние плечи и верх спины."],err:"Тянуть корпусом назад и опускать локти.",feel:"Задняя дельта, между лопатками. Это лечит «сутулость от компа»."},
+  revfly:{t:"db",n:"Разведения гантелей в наклоне",img:"Reverse_Flyes",how:["Лёг грудью на наклонную скамью или наклонись стоя, спина прямая.","Разводи гантели в стороны до уровня плеч, локти чуть согнуты.","Сведи лопатки вверху, медленно опусти. Дома — бутылки или лёгкие гантели."],err:"Махи с рывком и подъём плеч к ушам.",feel:"Задняя дельта, верх спины."},
+  farmer:{t:"carry",n:"Прогулка фермера",img:"Farmers_Walk",how:["Возьми две тяжёлые гантели (или сумки, рюкзаки) в опущенных руках.","Иди ровно 30–40 метров: плечи вниз и назад, пресс напряжён, шаг короткий.","Поставь вес аккуратно, присев. Отдых и снова. Пиши вес одной руки и метры."],err:"Заваливаться в сторону и сутулиться.",feel:"Хват, предплечья, трапеции, весь кор."},
+  ohext:{t:"db",n:"Разгибание гантели из-за головы",img:"Standing_Dumbbell_Triceps_Extension",how:["Одна гантель двумя руками над головой, локти смотрят вперёд.","Опускай гантель за голову, сгибая только локти.","Разгибай вверх. Пресс напряжён, поясница не прогибается."],err:"Локти разъезжаются в стороны.",feel:"Трицепс, особенно длинная головка."}
 };
 const DAYS = {
   A:{name:"Тренировка A",what:"Присед — ноги и пресс",
-     gym:[["squat","4 × 6–10"],["rdl","3 × 8–12"],["bulg","3 × 8–12 на ногу"],["bench","3 × 8–12"],["deadbug","3 × 8 на сторону"]],
-     home:[["goblet","4 × 8–12"],["hingeHome","3 × 10–15"],["bulg","3 × 10–15 на ногу"],["push","3 × 8–20"],["deadbug","3 × 8 на сторону"]]},
+     gym:[["squat","4 × 6–10"],["rdl","3 × 8–12"],["bulg","3 × 8–12 на ногу"],["bench","3 × 8–12"],["deadbug","3 × 8 на сторону"],["curl","3 × 10–15"],["facepull","3 × 12–20"]],
+     home:[["goblet","4 × 8–12"],["hingeHome","3 × 10–15"],["bulg","3 × 10–15 на ногу"],["push","3 × 8–20"],["deadbug","3 × 8 на сторону"],["curl","3 × 10–15"],["benchdips","3 × 10–20"],["revfly","3 × 12–20"]]},
   B:{name:"Тренировка B",what:"Ягодицы и спина",
-     gym:[["thrust","4 × 8–12"],["legpress","3 × 10–15"],["pull","3 × 6–12"],["calf","3 × 12–20"],["pallof","3 × 10 на сторону"],["hang","3 × 8–15"]],
-     home:[["bridge1","4 × 10–15 на ногу"],["bulg","3 × 10–15 на ногу"],["row","3 × 10–15 на руку"],["calf","3 × 15–20"],["side","3 × 30–45 с"],["rcrunch","3 × 10–15"]]},
+     gym:[["thrust","4 × 8–12"],["legpress","3 × 10–15"],["pull","3 × 6–12"],["calf","3 × 12–20"],["pallof","3 × 10 на сторону"],["hang","3 × 8–15"],["incline","3 × 8–12"],["lateral","3 × 12–20"]],
+     home:[["bridge1","4 × 10–15 на ногу"],["bulg","3 × 10–15 на ногу"],["row","3 × 10–15 на руку"],["calf","3 × 15–20"],["side","3 × 30–45 с"],["rcrunch","3 × 10–15"],["pushfeet","3 × 8–20"],["lateral","3 × 12–20"]]},
   C:{name:"Тренировка C",what:"Тяга — ноги, спина, кор",
-     gym:[["trap","4 × 5–8"],["lunge","3 × 10–12 на ногу"],["row","3 × 8–12 на руку"],["dips","3 × 8–12"],["cph","3 × 15–30 с"],["roller","3 × 6–12"]],
-     home:[["hingeHome","4 × 10–15"],["rlunge","3 × 10–12 на ногу"],["row","3 × 12–15 на руку"],["cpush","3 × 8–20"],["cph","3 × 15–30 с"],["rcrunch","3 × 10–15"]]},
+     gym:[["trap","4 × 5–8"],["lunge","3 × 10–12 на ногу"],["row","3 × 8–12 на руку"],["dips","3 × 8–12"],["cph","3 × 15–30 с"],["farmer","3 × 30–40 м"],["hammer","3 × 10–12"],["ohext","3 × 10–15"]],
+     home:[["hingeHome","4 × 10–15"],["rlunge","3 × 10–12 на ногу"],["row","3 × 12–15 на руку"],["cpush","3 × 8–20"],["cph","3 × 15–30 с"],["farmer","3 × 30–40 м"],["hammer","3 × 10–12"],["ohext","3 × 10–15"]]},
   Z2:{name:"Вело и растяжка",what:"Спокойное кардио",gym:[["bike","30–45 мин"],["hipflex","8 мин"]],home:null}
 };
 const ORDER=["A","B","C"];
@@ -418,8 +438,8 @@ const sessions=()=>store.get("sessions",[]);
 function addSession(s){const all=sessions().filter(x=>x.id!==s.id);all.push(s);all.sort((a,b)=>a.id<b.id?-1:1);store.set("sessions",all.slice(-200))}
 function lastSets(k){const all=sessions();for(let i=all.length-1;i>=0;i--){const e=(all[i].ex||[]).find(x=>x.k===k&&x.sets&&x.sets.length);if(e)return {date:all[i].date,sets:e.sets}}return null}
 function parseDose(d){const m=d.match(/^(\d+)\s*×\s*(\d+)(?:–(\d+))?/);if(!m)return null;return {sets:+m[1],lo:+m[2],hi:+(m[3]||m[2])}}
-function stepOf(k){const e=EX[k];if(e.t==="db")return 2;if(e.t==="bw")return 2.5;return 2.5}
-function incOf(k){return EX[k].big?5:(EX[k].t==="db"?2:2.5)}
+function stepOf(k){const e=EX[k];if(e.t==="db"||e.t==="carry")return 2;return 2.5}
+function incOf(k){return EX[k].big?5:(EX[k].t==="db"||EX[k].t==="carry"?2:2.5)}
 function coach(){return store.get("coach",null)}
 function suggest(k,dose){
   const p=parseDose(dose),e=EX[k],c=coach(),tg=c&&c.targets&&c.targets[k];
@@ -477,11 +497,11 @@ function render(){
       rows.forEach((r,j)=>{
         const row=document.createElement("div");row.className="setrow";
         row.innerHTML=`<span class="sn">${j+1}</span>`+(kgOn?`<span class="grp"><button class="stp" data-f="kg" data-d="-1" aria-label="меньше кг">−</button><input class="num-in" data-f="kg" inputmode="decimal" placeholder="${e.t==="bw"?"свой":"кг"}" aria-label="кг"><button class="stp" data-f="kg" data-d="1" aria-label="больше кг">+</button></span><span class="x">×</span>`:"")+
-          `<span class="grp"><button class="stp" data-f="reps" data-d="-1" aria-label="меньше">−</button><input class="num-in" data-f="reps" inputmode="numeric" aria-label="${e.t==="time"?"секунды":"повторы"}"><button class="stp" data-f="reps" data-d="1" aria-label="больше">+</button></span>${e.t==="time"?'<span class="lbl">с</span>':""}<button class="ok" aria-label="Подход сделан">✓</button>`;
+          `<span class="grp"><button class="stp" data-f="reps" data-d="-1" aria-label="меньше">−</button><input class="num-in" data-f="reps" inputmode="numeric" aria-label="${e.t==="time"?"секунды":e.t==="carry"?"метры":"повторы"}"><button class="stp" data-f="reps" data-d="1" aria-label="больше">+</button></span>${e.t==="time"?'<span class="lbl">с</span>':e.t==="carry"?'<span class="lbl">м</span>':""}<button class="ok" aria-label="Подход сделан">✓</button>`;
         const ins={};row.querySelectorAll("input").forEach(x=>{ins[x.dataset.f]=x;x.value=r[x.dataset.f]===""||r[x.dataset.f]==null?"":String(r[x.dataset.f]).replace(".",",")});
         const ok=row.querySelector(".ok");const paint=()=>{ok.classList.toggle("on",r.done);row.classList.toggle("on",r.done)};paint();
         const save=()=>{const dd=getDraft();dd[k]=rows;setDraft(dd);c.classList.toggle("done",rows.every(x=>x.done));showPlates()};
-        row.querySelectorAll(".stp").forEach(b=>b.onclick=()=>{const f=b.dataset.f;const step=f==="kg"?stepOf(k):(e.t==="time"?5:1);
+        row.querySelectorAll(".stp").forEach(b=>b.onclick=()=>{const f=b.dataset.f;const step=f==="kg"?stepOf(k):(e.t==="time"||e.t==="carry"?5:1);
           let v=(parseFloat(String(ins[f].value).replace(",","."))||0)+ +b.dataset.d*step;v=Math.max(0,+v.toFixed(2));
           r[f]=f==="kg"&&v===0&&e.t==="bw"?"":v;ins[f].value=r[f]===""?"":String(r[f]).replace(".",",");
           // вес первого подхода тянет за собой следующие неотмеченные
@@ -518,7 +538,7 @@ function sessionText(s){
     if(e.t==="cardio")return `- ${e.n}: ${x.done?(x.min||"?")+" мин ✓":"—"}`;
     if(e.t==="check")return `- ${e.n}: ${x.done?"✓":"—"}`;
     if(!x.sets.length)return `- ${e.n}: —`;
-    return `- ${e.n}: `+x.sets.map(t=>(t.kg?fmtKg(t.kg)+"×":"")+t.reps+(e.t==="time"?" с":"")).join(", ")});
+    return `- ${e.n}: `+x.sets.map(t=>(t.kg?fmtKg(t.kg)+"×":"")+t.reps+(e.t==="time"?" с":e.t==="carry"?" м":"")).join(", ")});
   lines.push(`- Кегель: ${s.kegel?"да":"нет"}`);if(s.bw)lines.push(`- Вес утром: ${fmtKg(s.bw)} кг`);lines.push(`- Самочувствие: ${s.mood||"—"}`);
   return `отчёт fit ${ruDate(s.date)}: ${d.name} (${s.place==="home"?"дом":"зал"})\n`+lines.join("\n");
 }
