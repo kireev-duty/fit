@@ -1,5 +1,5 @@
 // Offline cache: everything is saved on install, then served cache-first.
-const CACHE = "fit-v7";
+const CACHE = "fit-v8";
 const IMGS = ["Ab_Roller","Barbell_Hip_Thrust","Barbell_Squat","Dead_Bug","Dips_-_Triceps_Version","Dumbbell_Bench_Press",
   "Dumbbell_Lunges","Dumbbell_Rear_Lunge","Goblet_Squat","Hanging_Leg_Raise","Kneeling_Hip_Flexor","Leg_Press",
   "One-Arm_Dumbbell_Row","One_Leg_Barbell_Squat","Pallof_Press","Pullups","Push-Ups_-_Close_Triceps_Position","Pushups",
