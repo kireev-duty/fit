@@ -125,6 +125,15 @@ details.tech[open]{display:flex;flex-direction:column;gap:8px}
 .chart .pt{fill:var(--accent)}
 .chart .bar{fill:var(--accent);opacity:.45}
 .chart .bar.now{opacity:1}
+.sub{display:flex;flex-direction:column;gap:12px}
+.mobpic{margin:0;border-radius:10px;overflow:hidden}
+.mcue{font-size:15px;min-height:3em}
+#mList li.cur{font-weight:700;color:var(--accent)}
+.breath{position:relative;display:grid;place-items:center;height:240px}
+.bcircle{width:120px;height:120px;border-radius:50%;background:var(--accent);opacity:.25;transform:scale(1);transition:transform 4s ease-in-out,opacity 4s ease-in-out}
+.bcircle.big{transform:scale(1.8);opacity:.45}
+.btext{position:absolute;text-align:center}
+@media (prefers-reduced-motion:reduce){.bcircle{transition:none}.bcircle.big{transform:scale(1)}}
 .kgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;max-width:280px}
 .kc{aspect-ratio:1;border-radius:4px;background:var(--soft)}
 .kc.on{background:var(--ok)}
@@ -142,7 +151,7 @@ details.tech[open]{display:flex;flex-direction:column;gap:8px}
 
   <nav role="tablist" id="tabs">
     <button role="tab" data-tab="today" aria-selected="true">Тренировка</button>
-    <button role="tab" data-tab="kegel" aria-selected="false">Кегель</button>
+    <button role="tab" data-tab="kegel" aria-selected="false">Таз</button>
     <button role="tab" data-tab="intervals" aria-selected="false">Вело-интервалы</button>
     <button role="tab" data-tab="progress" aria-selected="false">Прогресс</button>
     <button role="tab" data-tab="plan" aria-selected="false">План и еда</button>
@@ -209,6 +218,8 @@ details.tech[open]{display:flex;flex-direction:column;gap:8px}
 
   <!-- КЕГЕЛЬ -->
   <section data-view="kegel" class="panel" hidden>
+    <div class="seg" id="segPelvis"><button data-v="pKegel">Кегель</button><button data-v="pMob">Растяжка</button><button data-v="pBreath">Дыхание</button></div>
+    <div id="pKegel" class="sub">
     <h2>Тазовое дно (Кегель)</h2>
     <p><b>Что за мышца:</b> та, которой останавливаешь струю мочи и подтягиваешь основание члена вверх. Проверь один раз, тренироваться на унитазе не надо.</p>
     <p><b>Как:</b> лёг, ноги согнуты. Сжал эту мышцу и держишь, пока горит «Сжать». Пресс, ягодицы и бёдра расслаблены, дыхание ровное. На «Расслабить» отпускаешь полностью. Каждый день, около 8 минут.</p>
@@ -227,6 +238,31 @@ details.tech[open]{display:flex;flex-direction:column;gap:8px}
       <li><b>В постели</b> помогает не «сжать сильнее», а вовремя заметить нарастание и расслабить таз и дыхание. Короткое сокращение — как тормоз на пике.</li>
     </ul>
     <p class="warn">Боль или жжение в тазу — делай меньше. Нет эффекта за 12 недель — к урологу.</p>
+    </div>
+
+    <div id="pMob" class="sub" hidden>
+      <h2>Растяжка таза</h2>
+      <p>10 минут, 8 поз, идут сами по таймеру. 2–3 раза в неделю: после тренировки или в день отдыха. Свободный таз — легче присед и больше контроля в постели.</p>
+      <p class="toast" id="mStat"></p>
+      <figure class="mobpic"><div class="pics"><figure><img id="mImg0" alt=""></figure><figure><img id="mImg1" alt=""></figure></div></figure>
+      <div class="timer" id="mTimer"><div class="phase" id="mPhase">Готов</div><div class="clock" id="mClock">10:00</div><div class="label" id="mInfo">8 поз · около 10 минут</div></div>
+      <p class="mcue" id="mCue">Нажми «Старт», положи телефон рядом на пол.</p>
+      <div class="bar"><i id="mBar"></i></div>
+      <div class="row"><button class="btn" id="mStart">Старт</button><button class="btn ghost" id="mPause">Пауза</button><button class="btn ghost" id="mSkip">Дальше →</button></div>
+      <ol class="how" id="mList"></ol>
+      <p class="warn">Тянет — нормально, режет или щёлкает в паху и пояснице — выйди из позы и пропусти её.</p>
+    </div>
+
+    <div id="pBreath" class="sub" hidden>
+      <h2>Дыхание</h2>
+      <p>Медленно, 6 вдохов в минуту: вдох носом 4 секунды, выдох 6. На выдохе отпускай живот и низ таза, как в «обратном Кегеле».
+        Каждый день 5 минут — перед сном или перед тренировкой. В постели тот же длинный выдох помогает сбить пик возбуждения.</p>
+      <p class="toast" id="bStat"></p>
+      <div class="row"><span class="label">Время</span><div class="seg" id="segBreath"><button data-v="5">5 мин</button><button data-v="10">10 мин</button></div></div>
+      <div class="breath"><div class="bcircle" id="bCircle"></div><div class="btext"><div class="phase" id="bPhase">Готов</div><div class="label" id="bInfo"></div></div></div>
+      <div class="bar"><i id="bBar"></i></div>
+      <div class="row"><button class="btn" id="bStart">Старт</button><button class="btn ghost" id="bStop">Стоп</button></div>
+    </div>
   </section>
 
   <!-- ИНТЕРВАЛЫ -->
@@ -268,7 +304,7 @@ details.tech[open]{display:flex;flex-direction:column;gap:8px}
       <tr><td class="num">4</td><td>A, вело 45 мин спокойно, B, C</td></tr>
       <tr><td class="num">5</td><td>A, вело спокойно, B, вело-интервалы, C</td></tr>
     </table></div>
-    <p class="small muted">«Спокойно» = пульс 115–135, можешь говорить фразами. Кегель — каждый день отдельно. Каждая 4-я неделя лёгкая: по 2 подхода вместо 3–4.</p>
+    <p class="small muted">«Спокойно» = пульс 115–135, можешь говорить фразами. Кегель и дыхание 5 мин — каждый день отдельно, растяжка таза — 2–3 раза в неделю (вкладка «Таз»). Каждая 4-я неделя лёгкая: по 2 подхода вместо 3–4.</p>
     <h3>Бег — позже и постепенно</h3>
     <p>Пока основное кардио — велик. Бег начнём через 2 недели подъёмов на носки: 6 раз (1 мин бег + 2 мин шагом), 2 раза в неделю. Ноет голень на следующий день — шаг назад.</p>
     <h2>Еда на набор</h2>
@@ -602,6 +638,73 @@ const kT=makeTimer("k",min=>markKegel(true,min));
 $("segKegel").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;kStage=b.dataset.v;store.set("kstage",kStage);press("segKegel",kStage);kInfo()});
 press("segKegel",kStage);kInfo();
 $("kStart").onclick=()=>kT.start(kBuild);$("kStop").onclick=()=>kT.stop();
+
+// ---------- Таз: переключатель ----------
+let pSub=store.get("pSub","pKegel");
+function showSub(v){pSub=v;store.set("pSub",v);press("segPelvis",v);["pKegel","pMob","pBreath"].forEach(id=>$(id).hidden=id!==v);renderPelvisStats()}
+$("segPelvis").addEventListener("click",e=>{const b=e.target.closest("button");if(b)showSub(b.dataset.v)});
+function count28(kind){const d0=new Date();d0.setDate(d0.getDate()-27);const from=`${d0.getFullYear()}-${pad(d0.getMonth()+1)}-${pad(d0.getDate())}`;
+  return new Set(sessions().filter(s=>s.kind===kind&&s.date>=from).map(s=>s.date)).size}
+function doneToday(kind){return sessions().some(s=>s.kind===kind&&s.date===today())}
+function renderPelvisStats(){$("mStat").textContent=`За 28 дней: ${count28("mobility")}${doneToday("mobility")?" · сегодня сделано ✓":""}`;
+  $("bStat").textContent=`За 28 дней: ${count28("breath")}${doneToday("breath")?" · сегодня сделано ✓":""}`}
+function logPractice(kind,min,title){const s={id:today()+"T"+new Date().toTimeString().slice(0,5)+"-"+kind,date:today(),kind,min,text:`отчёт fit ${ruDate(today())}: ${title} ✓, ${min} мин`};
+  addSession(s);queue(s);renderPelvisStats();renderProgress();toast(title+" записано ✓")}
+
+// ---------- Растяжка таза ----------
+const MOB=[
+  {n:"Кошка-корова",img:"Cat_Stretch",sec:60,cue:"На четвереньках. На выдохе спина круглая, таз подкручен; на вдохе прогиб, копчик вверх. Медленно."},
+  {n:"Наклон таза в мост",img:"Pelvic_Tilt_Into_Bridge",sec:60,cue:"Лёжа, стопы на полу. Подкрути таз, прижми поясницу и поднимайся в мост позвонок за позвонком. Вниз так же. 10 раз."},
+  {n:"Сгибатель бедра — левая нога сзади",img:"Kneeling_Hip_Flexor",sec:45,cue:"Выпад на колене. Сожми ягодицу задней ноги и подай таз вперёд. Поясницу не прогибай."},
+  {n:"Сгибатель бедра — правая нога сзади",img:"Kneeling_Hip_Flexor",sec:45,cue:"То же на другую сторону."},
+  {n:"Ягодичная — левая",img:"IT_Band_and_Glute_Stretch",sec:45,cue:"Сидя или лёжа: левая стопа на правое колено («четвёрка»), притяни ногу к груди. Тянет в ягодице."},
+  {n:"Ягодичная — правая",img:"IT_Band_and_Glute_Stretch",sec:45,cue:"То же на другую сторону."},
+  {n:"Бабочка",img:"Groin_and_Back_Stretch",sec:60,cue:"Сидя, стопы вместе, колени в стороны. Спина длинная, медленно наклоняйся вперёд. Колени не дави руками."},
+  {n:"Скрутка лёжа — влево",img:"Knee_Across_The_Body",sec:45,cue:"Лёжа на спине, согнутое правое колено уводи влево к полу, плечи на полу, смотри вправо."},
+  {n:"Скрутка лёжа — вправо",img:"Knee_Across_The_Body",sec:45,cue:"То же в другую сторону."},
+  {n:"Глубокий присед",img:"Goblet_Squat",sec:60,cue:"Без веса. Пятки на полу, локти разводят колени, спина прямо. Можно держаться за опору."},
+  {n:"Поза ребёнка + дыхание",img:"Childs_Pose",sec:90,cue:"Таз на пятки, лоб на пол. Вдох 4 с, выдох 6 с. На выдохе отпускай живот и низ таза."}
+];
+const mob=(()=>{let t=null,idx=-1,end=0,left=0,paused=false,trans=false,tStart=0;const total=MOB.reduce((a,p)=>a+p.sec,0);
+  function list(){const ol=$("mList");ol.innerHTML="";MOB.forEach((p,i)=>{const li=document.createElement("li");li.textContent=`${p.n} — ${p.sec} с`;if(i===idx)li.className="cur";ol.appendChild(li)})}
+  function pic(p){$("mImg0").src=`img/${p.img}-0.jpg`;$("mImg1").src=`img/${p.img}-1.jpg`}
+  function elapsed(){return MOB.slice(0,Math.max(idx,0)).reduce((a,p)=>a+p.sec,0)+(idx>=0&&!trans?MOB[idx].sec-left:0)}
+  function paint(){const p=MOB[Math.max(idx,0)];
+    $("mPhase").textContent=trans?"Дальше: "+p.n:p.n;$("mClock").textContent=fmt(Math.ceil(left));
+    $("mInfo").textContent=`${idx+1} из ${MOB.length} · осталось ~${Math.ceil((total-elapsed())/60)} мин`;$("mCue").textContent=p.cue;
+    $("mTimer").className="timer "+(trans?"rest":"work");$("mBar").style.width=Math.min(100,elapsed()/total*100)+"%"}
+  function go(i){idx=i;if(idx>=MOB.length){finish();return}trans=idx>0;left=trans?5:MOB[idx].sec;end=Date.now()+left*1000;pic(MOB[idx]);list();paint();beep(trans?660:988)}
+  function tick(){if(paused)return;left=Math.max(0,(end-Date.now())/1000);
+    if(left<=0){if(trans){trans=false;left=MOB[idx].sec;end=Date.now()+left*1000;beep(988)}else{go(idx+1);return}}paint()}
+  function start(){stop();paused=false;tStart=Date.now();go(0);t=setInterval(tick,250);keepAwake();$("mPause").textContent="Пауза"}
+  function stop(){clearInterval(t);t=null;releaseAwake()}
+  function finish(){stop();idx=MOB.length-1;$("mPhase").textContent="Готово";$("mClock").textContent="0:00";$("mBar").style.width="100%";$("mTimer").className="timer rest";beep(1175,400);
+    const min=Math.round((Date.now()-tStart)/60000);
+    if(Date.now()-tStart>=total*500){$("mCue").textContent="Отлично. Таз скажет спасибо.";logPractice("mobility",Math.max(min,1),"Растяжка таза")}
+    else $("mCue").textContent="Пролистал быстро — такую не записываю. В следующий раз постой в позах."}
+  $("mStart").onclick=start;
+  $("mPause").onclick=()=>{if(!t)return;paused=!paused;if(paused){$("mPause").textContent="Продолжить"}else{end=Date.now()+left*1000;$("mPause").textContent="Пауза"}};
+  $("mSkip").onclick=()=>{if(!t)return;if(trans){trans=false;left=MOB[idx].sec;end=Date.now()+left*1000;paint()}else go(idx+1)};
+  pic(MOB[0]);list();
+  return {start,stop,_go:go,_finish:finish};
+})();
+
+// ---------- Дыхание ----------
+let bMin=+store.get("bMin",5);
+const breath=(()=>{let t=null,end=0,t0=0,phaseEnd=0,inhale=true,n=0;const IN=4,OUT=6,c=$("bCircle");
+  function setPhase(inh){inhale=inh;const d=inh?IN:OUT;phaseEnd=Date.now()+d*1000;c.style.transitionDuration=d+"s";c.classList.toggle("big",inh);
+    $("bPhase").textContent=inh?"Вдох":"Выдох — отпусти таз";if(inh)n++}
+  function tick(){const now=Date.now();if(now>=end){finish();return}if(now>=phaseEnd)setPhase(!inhale);
+    $("bInfo").textContent=`${fmt(Math.ceil((end-now)/1000))} · вдохов ${n}`;$("bBar").style.width=Math.min(100,(now-t0)/(end-t0)*100)+"%"}
+  function start(){stop();t0=Date.now();end=t0+bMin*60000;n=0;beep(660);setPhase(true);t=setInterval(tick,200);tick();keepAwake()}
+  function stop(){clearInterval(t);t=null;c.classList.remove("big");$("bPhase").textContent="Готов";releaseAwake()}
+  function finish(){stop();$("bPhase").textContent="Готово";$("bBar").style.width="100%";beep(1175,400);logPractice("breath",bMin,"Дыхание")}
+  $("bStart").onclick=start;$("bStop").onclick=stop;
+  return {start,stop,_finish:finish};
+})();
+$("segBreath").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;bMin=+b.dataset.v;store.set("bMin",bMin);press("segBreath",String(bMin));$("bInfo").textContent=`${bMin} мин`});
+press("segBreath",String(bMin));$("bInfo").textContent=`${bMin} мин`;
+showSub(pSub);
 let hiit=store.get("hiit","4x4");
 function iBuild(){const a=[{label:"Разминка",sec:600,kind:"rest",info:"легко, пульс 100–120"}];
   if(hiit==="4x4"){for(let i=1;i<=4;i++){a.push({label:"Работа",sec:240,kind:"work",info:`${i} из 4 · пульс 160–180`});if(i<4)a.push({label:"Легко",sec:180,kind:"rest",info:`отдых после ${i}-го`})}}
@@ -645,7 +748,7 @@ function renderProgress(){
   // Кегель 28 дней
   const days=kegelDays();let cells="";const d0=new Date();d0.setDate(d0.getDate()-27);
   for(let i=0;i<28;i++){const d=new Date(d0);d.setDate(d0.getDate()+i);const iso=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;cells+=`<span class="kc${days.has(iso)?" on":""}${iso===today()?" td":""}" title="${ruDate(iso)}"></span>`}
-  $("kegelGrid").innerHTML=cells;$("kegelSum").textContent=`За 28 дней: ${[...days].filter(x=>x>=`${d0.getFullYear()}-${pad(d0.getMonth()+1)}-${pad(d0.getDate())}`).length} · дней подряд: ${kegelStreak()}`;
+  $("kegelGrid").innerHTML=cells;$("kegelSum").textContent=`За 28 дней: ${[...days].filter(x=>x>=`${d0.getFullYear()}-${pad(d0.getMonth()+1)}-${pad(d0.getDate())}`).length} · дней подряд: ${kegelStreak()} · растяжка: ${count28("mobility")} · дыхание: ${count28("breath")}`;
   $("progEmpty").hidden=all.length>0;
 }
 $("segLift").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;liftSel=b.dataset.v;store.set("liftSel",liftSel);renderProgress()});

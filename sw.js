@@ -1,10 +1,11 @@
 // Offline cache: everything is saved on install, then served cache-first.
-const CACHE = "fit-v4";
+const CACHE = "fit-v5";
 const IMGS = ["Ab_Roller","Barbell_Hip_Thrust","Barbell_Squat","Dead_Bug","Dips_-_Triceps_Version","Dumbbell_Bench_Press",
   "Dumbbell_Lunges","Dumbbell_Rear_Lunge","Goblet_Squat","Hanging_Leg_Raise","Kneeling_Hip_Flexor","Leg_Press",
   "One-Arm_Dumbbell_Row","One_Leg_Barbell_Squat","Pallof_Press","Pullups","Push-Ups_-_Close_Triceps_Position","Pushups",
   "Reverse_Crunch","Romanian_Deadlift","Side_Bridge","Single_Leg_Glute_Bridge","Standing_Calf_Raises",
-  "Stiff-Legged_Dumbbell_Deadlift","Trap_Bar_Deadlift"];
+  "Stiff-Legged_Dumbbell_Deadlift","Trap_Bar_Deadlift",
+  "Cat_Stretch","Pelvic_Tilt_Into_Bridge","IT_Band_and_Glute_Stretch","Groin_and_Back_Stretch","Knee_Across_The_Body","Childs_Pose"];
 const FILES = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png"]
   .concat(IMGS.flatMap(n => [`img/${n}-0.jpg`, `img/${n}-1.jpg`]));
 
