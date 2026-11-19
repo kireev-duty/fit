@@ -27,7 +27,7 @@
 [hidden]{display:none!important}
 html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 var(--f-body);
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 110px}
 .wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
 h1,h2,h3,.big .day{font-weight:700}
 h1,h2,h3{font-family:var(--f-display);letter-spacing:.01em;text-wrap:balance;margin:0;line-height:1.1}
@@ -94,6 +94,41 @@ ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
 .hist .st{font-size:12px;color:var(--muted)}
 .hist .st.sent{color:var(--ok)}
 .hist button{font:600 13px var(--f-body);background:transparent;border:1px solid var(--line);color:var(--fg);border-radius:8px;padding:6px 10px;cursor:pointer}
+.coach{border-color:var(--accent)}
+.cnote{font-weight:600}
+.hint{font-size:13.5px;background:var(--soft);padding:8px 10px;border-radius:8px}
+.hint.coach{color:var(--accent);font-weight:600}
+details.tech summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--accent)}
+details.tech[open]{display:flex;flex-direction:column;gap:8px}
+.sets{display:flex;flex-direction:column;gap:6px}
+.setrow{display:flex;align-items:center;gap:5px;flex-wrap:nowrap;padding:4px;border-radius:8px}
+.setrow.on{background:var(--soft)}
+.setrow .sn{width:16px;font:600 13px var(--f-mono);color:var(--muted);text-align:center;flex:none}
+.setrow .grp{display:flex;align-items:center;gap:2px;min-width:0}
+.setrow .x,.setrow .lbl{color:var(--muted);font-size:13px;flex:none}
+.stp{width:30px;height:36px;flex:none;font:600 18px var(--f-body);border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:8px;cursor:pointer;padding:0}
+.num-in{width:52px;min-width:0;height:36px;text-align:center;font:600 15px var(--f-mono);border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);padding:0}
+.ok{margin-left:auto;width:40px;height:36px;flex:none;border:2px solid var(--line);border-radius:10px;background:var(--panel);color:var(--muted);font:700 17px var(--f-body);cursor:pointer}
+.ok.on{background:var(--ok);border-color:var(--ok);color:#fff}
+.rest{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--accent);color:var(--accent-ink);
+  padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+  display:flex;align-items:center;gap:12px;box-shadow:0 -4px 16px rgba(0,0,0,.18)}
+.rest .rc{font:700 30px var(--f-mono);font-variant-numeric:tabular-nums}
+.rest .rl{flex:1;font-weight:600;font-size:14px}
+.rest button{font:600 14px var(--f-body);background:transparent;color:var(--accent-ink);border:1px solid currentColor;border-radius:8px;padding:8px 10px;cursor:pointer}
+.chart{width:100%;height:auto;display:block}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.chart .goal{stroke:var(--ok);stroke-width:1.5;stroke-dasharray:4 4}
+.chart .ax{fill:var(--muted);font:11px var(--f-body)}
+.chart .ln{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linejoin:round}
+.chart .area{fill:var(--accent);opacity:.12}
+.chart .pt{fill:var(--accent)}
+.chart .bar{fill:var(--accent);opacity:.45}
+.chart .bar.now{opacity:1}
+.kgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;max-width:280px}
+.kc{aspect-ratio:1;border-radius:4px;background:var(--soft)}
+.kc.on{background:var(--ok)}
+.kc.td{outline:2px solid var(--accent);outline-offset:1px}
 @media (prefers-reduced-motion:reduce){.bar i{transition:none}}
 </style>
 
@@ -109,6 +144,7 @@ ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
     <button role="tab" data-tab="today" aria-selected="true">Тренировка</button>
     <button role="tab" data-tab="kegel" aria-selected="false">Кегель</button>
     <button role="tab" data-tab="intervals" aria-selected="false">Вело-интервалы</button>
+    <button role="tab" data-tab="progress" aria-selected="false">Прогресс</button>
     <button role="tab" data-tab="plan" aria-selected="false">План и еда</button>
     <button role="tab" data-tab="settings" aria-selected="false">Настройки</button>
   </nav>
@@ -126,12 +162,14 @@ ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
       <ol>
         <li>Тренировки идут по кругу: <b>A → B → C → A…</b> Страница помнит, какая следующая. Пропустил неделю — просто делай следующую по кругу.</li>
         <li>Выбери <b>Зал</b> или <b>Дом</b>. Упражнения сверху вниз, по порядку.</li>
-        <li><b>«3 × 8–12»</b> = 3 подхода, в каждом 8–12 повторов. Вес подбирай так, чтобы в конце подхода оставалось ещё 2 повтора в запасе. Если все подходы легко на 12 — в следующий раз вес чуть больше.</li>
-        <li>Между подходами отдых 1,5–2 мин, на первом упражнении 2–3 мин.</li>
-        <li>В поле под упражнением пиши вес и повторы: <span class="num">40×10,10,8</span>. В конце нажми <b>«Сохранить тренировку»</b>. Без интернета тоже можно: отчёт уйдёт сам, когда появится сеть.</li>
+        <li><b>«3 × 8–12»</b> = 3 подхода, в каждом 8–12 повторов. Вес подбирай так, чтобы в конце подхода оставалось ещё 2 повтора в запасе.</li>
+        <li>У каждого подхода кнопки <b>−/+</b> для веса и повторов. Сделал подход — жми <b>✓</b>, внизу запустится таймер отдыха. Вес и повторы подставляются из прошлого раза, а подсказка говорит, когда прибавить.</li>
+        <li>В конце нажми <b>«Сохранить тренировку»</b>. Без интернета тоже можно: отчёт уйдёт сам, когда появится сеть. Кегель и вело-интервалы записываются сами, когда таймер дошёл до конца.</li>
         <li>На часах запусти тренировку «Силовая» (или «Велотренажёр») — так пульс попадёт в Zepp.</li>
       </ol>
     </details>
+
+    <div class="panel coach" id="coachCard" hidden></div>
 
     <div class="panel">
       <div class="big">
@@ -153,7 +191,7 @@ ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
         <label class="small">Вес утром <input type="text" inputmode="decimal" id="bodyW" placeholder="кг"></label>
         <label class="small" style="flex:1 1 200px">Самочувствие <input type="text" id="mood" placeholder="норм, болит колено…" style="width:100%"></label>
       </div>
-      <textarea id="report" readonly aria-label="Текст отчёта"></textarea>
+      <details class="help"><summary class="small">Текст отчёта</summary><textarea id="report" readonly aria-label="Текст отчёта"></textarea></details>
       <div class="row">
         <button class="btn" id="saveBtn">Сохранить тренировку</button>
         <button class="btn ghost" id="shareBtn">В Telegram</button>
@@ -174,6 +212,7 @@ ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
     <h2>Тазовое дно (Кегель)</h2>
     <p><b>Что за мышца:</b> та, которой останавливаешь струю мочи и подтягиваешь основание члена вверх. Проверь один раз, тренироваться на унитазе не надо.</p>
     <p><b>Как:</b> лёг, ноги согнуты. Сжал эту мышцу и держишь, пока горит «Сжать». Пресс, ягодицы и бёдра расслаблены, дыхание ровное. На «Расслабить» отпускаешь полностью. Каждый день, около 8 минут.</p>
+    <p class="toast" id="kStreak"></p>
     <div class="row"><span class="label">Этап</span>
       <div class="seg" id="segKegel">
         <button data-v="1">Нед 1–2 · лёжа</button><button data-v="2">Нед 3–6 · сидя</button><button data-v="3">Нед 7–12 · стоя</button>
@@ -200,6 +239,24 @@ ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
     <div class="timer" id="iTimer"><div class="phase" id="iPhase">Готов</div><div class="clock" id="iClock">0:00</div><div class="label" id="iInfo"></div></div>
     <div class="bar"><i id="iBar"></i></div>
     <div class="row"><button class="btn" id="iStart">Старт</button><button class="btn ghost" id="iStop">Стоп</button></div>
+  </section>
+
+  <!-- ПРОГРЕСС -->
+  <section data-view="progress" class="panel" hidden>
+    <h2>Прогресс</h2>
+    <p class="small muted" id="progEmpty">Графики появятся после первых сохранённых тренировок. Новый телефон? Восстанови историю кнопкой внизу.</p>
+    <h3>Рабочий вес</h3>
+    <div class="seg" id="segLift"><button data-v="squat">Присед</button><button data-v="thrust">Хип-траст</button><button data-v="trap">Становая</button><button data-v="rdl">Румынская</button></div>
+    <div id="liftChart"></div>
+    <h3>Вес тела</h3>
+    <div id="bwChart"></div>
+    <h3>Тренировок в неделю</h3>
+    <div id="weekChart"></div>
+    <h3>Кегель, 28 дней</h3>
+    <div class="kgrid" id="kegelGrid"></div>
+    <p class="small muted" id="kegelSum"></p>
+    <div class="row"><button class="btn ghost" id="restoreBtn">Восстановить из fit-log</button></div>
+    <p class="small" id="restoreOut"></p>
   </section>
 
   <!-- ПЛАН И ЕДА -->
@@ -252,216 +309,387 @@ ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
     <div class="logrow"><input type="password" id="tokenIn" autocomplete="off" aria-label="Ключ доставки"><button class="btn" id="tokenSave">Сохранить ключ</button></div>
     <div class="row"><button class="btn ghost" id="tokenTest">Проверить доставку</button><button class="btn ghost" id="tokenDel">Удалить ключ</button></div>
     <p class="small" id="testOut"></p>
+    <h3>Гриф</h3>
+    <label class="small">Вес грифа, кг <input class="num-in" id="barIn" inputmode="decimal" style="width:70px"></label>
   </section>
 </div>
 
+<div class="rest" id="rest" hidden role="status" aria-live="polite">
+  <span class="rc" id="restClock">1:30</span><span class="rl" id="restLabel">Отдых</span>
+  <button id="restPlus" type="button">+30 с</button><button id="restSkip" type="button">Пропустить</button>
+</div>
+
 <script>
-// Справочник упражнений: фото, техника, частая ошибка, где чувствовать
+// ---------- Справочник упражнений ----------
+// t: bar — штанга (калькулятор блинов, разминка), db — гантели/гиря, bw — свой вес, time — на время, mach — тренажёр/блок, cardio — минуты, check — просто отметка
+// big: шаг прогрессии +5 кг
 const EX = {
-  squat:{n:"Присед со штангой",img:"Barbell_Squat",how:["Гриф на верх спины, не на шею. Стопы чуть шире плеч, носки немного врозь.","Вдохни животом, напряги пресс и садись: таз назад и вниз, колени идут по направлению носков.","Глубина — бёдра хотя бы параллельно полу. Пятки не отрываются.","Вставай, толкаясь всей стопой, спина под одним углом всё время."],err:"Колени заваливаются внутрь или круглится поясница внизу. Убери вес и сядь глубже с паузой.",feel:"Передняя часть бедра и ягодицы."},
-  goblet:{n:"Гоблет-присед",img:"Goblet_Squat",how:["Гантель или гиря у груди, локти вниз.","Садись между колен, спина прямая, грудь вперёд.","Пауза внизу 2–3 с, потом встал."],err:"Пятки отрываются — поставь стопы шире.",feel:"Бёдра и ягодицы."},
-  rdl:{n:"Румынская тяга",img:"Romanian_Deadlift",how:["Встал прямо со штангой или гантелями, колени чуть согнуты и так остаются.","Отводи таз назад, гриф скользит по бёдрам вниз. Спина прямая.","Опускайся, пока не потянет заднюю часть бедра (обычно чуть ниже колен).","Вставай, сжимая ягодицы."],err:"Круглая спина или приседание вместо наклона. Думай «таз назад», а не «вниз».",feel:"Задняя часть бедра и ягодицы. Не поясница."},
-  bulg:{n:"Болгарские выпады",img:"One_Leg_Barbell_Squat",how:["Встань спиной к скамье, носок задней ноги на скамье. Удобнее с гантелями в руках.","Передняя стопа так далеко, чтобы колено внизу было над стопой.","Опускайся вертикально вниз до лёгкого касания коленом пола.","Толкайся передней пяткой. Все повторы на одну ногу, потом на другую."],err:"Шаг слишком короткий — колено уходит далеко вперёд и болит.",feel:"Ягодица и бедро передней ноги."},
-  bench:{n:"Жим гантелей лёжа",img:"Dumbbell_Bench_Press",how:["Лёг на скамью, лопатки сведены, стопы на полу.","Опускай гантели к груди, локти под углом ~45° к телу.","Выжми вверх."],err:"Локти в стороны под 90° — нагрузка на плечо.",feel:"Грудь и трицепс."},
-  deadbug:{n:"Dead bug («жук»)",img:"Dead_Bug",how:["Лёг на спину, руки вверх, ноги согнуты над тазом.","Прижми поясницу к полу и не отрывай.","Медленно опускай противоположные руку и ногу к полу, вернул, сменил сторону."],err:"Поясница отрывается — уменьши амплитуду.",feel:"Глубокий пресс."},
-  hingeHome:{n:"Румынская тяга с гантелью или рюкзаком",img:"Stiff-Legged_Dumbbell_Deadlift",how:["Вес в руках, колени чуть согнуты.","Таз назад, спина прямая, опускай до натяжения сзади бедра.","Вставай, сжимая ягодицы. Медленно вниз за 3 секунды."],err:"Круглая спина.",feel:"Задняя часть бедра, ягодицы."},
-  push:{n:"Отжимания",img:"Pushups",how:["Руки чуть шире плеч, тело прямое от головы до пяток.","Опускайся грудью почти до пола, локти под 45°.","Выжался. Тяжело — с колен или руками на диван."],err:"Провисает поясница — напряги пресс и ягодицы.",feel:"Грудь, трицепс."},
-  thrust:{n:"Ягодичный мост со штангой (хип-траст)",img:"Barbell_Hip_Thrust",how:["Сел на пол спиной к скамье, лопатки на краю скамьи. Гриф на тазу, под ним мягкая подкладка.","Стопы на ширине плеч, так, чтобы вверху голень была вертикальной.","Поднимай таз, пока тело не станет прямым от плеч до колен. Сожми ягодицы на 1 с.","Опустился и сразу следующий."],err:"Прогиб в пояснице вверху. Подбородок к груди, рёбра вниз.",feel:"Ягодицы. Если бёдра сзади — стопы ближе."},
-  legpress:{n:"Жим ногами",img:"Leg_Press",how:["Спина и таз прижаты к спинке.","Стопы на платформе высоко и на ширине плеч — так больше ягодиц.","Опускай, пока таз не начнёт отрываться, потом выжми. Колени не выпрямляй до щелчка."],err:"Таз отрывается от сиденья внизу — меньше глубина.",feel:"Ягодицы и бёдра."},
-  pull:{n:"Подтягивания или тяга верхнего блока",img:"Pullups",how:["Хват чуть шире плеч.","Сначала сведи лопатки вниз, потом тяни грудь к перекладине.","Опускайся полностью. Если подтягиваешься меньше 6 раз — делай тягу верхнего блока."],err:"Рывки ногами и неполная амплитуда.",feel:"Широчайшие, бицепс."},
-  calf:{n:"Подъёмы на носки",img:"Standing_Calf_Raises",how:["Носки на краю ступеньки или блина, пятки свисают.","Опусти пятки вниз до растяжения, потом поднимись максимально высоко, пауза 1 с.","Медленно. Это защита голени для будущего бега."],err:"Пружинить быстро без паузы.",feel:"Икры."},
-  pallof:{n:"Pallof press (антиротация)",img:"Pallof_Press",how:["Встань боком к блоку или резинке, ручка у груди.","Выпрями руки вперёд и держи 2 с — корпус не должен поворачиваться.","Вернул к груди. Потом другим боком."],err:"Корпус крутится за тросом — встань ближе к блоку.",feel:"Косые мышцы и весь кор."},
-  hang:{n:"Подъём ног в висе",img:"Hanging_Leg_Raise",how:["Вис на перекладине, не раскачиваться.","Поднимай колени к груди, подкручивая таз.","Медленно опусти. Сильнее — прямые ноги."],err:"Раскачка и мах ногами.",feel:"Низ пресса."},
-  trap:{n:"Становая тяга с трэп-грифа",img:"Trap_Bar_Deadlift",how:["Встань в центр грифа, присядь и возьмись за ручки.","Спина прямая, грудь вперёд, вдох животом.","Толкай пол ногами и вставай. Вверху не отклоняйся назад.","Нет трэп-грифа — обычная становая с лёгкого веса, гриф близко к ногам."],err:"Круглая спина при старте. Сначала спина ровно, потом тянем.",feel:"Ноги, ягодицы, вся спина."},
-  lunge:{n:"Выпады в ходьбе с гантелями",img:"Dumbbell_Lunges",how:["Гантели в руках, корпус прямо.","Широкий шаг вперёд, опустись до лёгкого касания коленом.","Встань и шагни другой ногой вперёд."],err:"Короткий шаг и колено далеко за носком.",feel:"Ягодицы и бёдра."},
-  row:{n:"Тяга гантели в наклоне",img:"One-Arm_Dumbbell_Row",how:["Колено и рука на скамье, спина ровная.","Тяни гантель к поясу, локоть вдоль тела.","Медленно опусти. Дома — с рюкзаком."],err:"Тянуть рукой с поворотом корпуса.",feel:"Широчайшие."},
-  dips:{n:"Отжимания на брусьях",img:"Dips_-_Triceps_Version",how:["Упор на брусьях, руки прямые.","Опускайся, пока плечо не станет параллельно полу.","Выжмись. Тяжело — гравитрон или жим гантелей сидя."],err:"Слишком глубоко — болит плечо.",feel:"Трицепс, грудь."},
-  cph:{n:"Копенгагенская планка",img:"Side_Bridge",how:["Боковая планка на локте (на фото — простой вариант).","Усложнение: верхняя нога на скамье или диване, нижняя висит.","Держи тело прямым 15–30 с, потом другая сторона."],err:"Таз проваливается вниз.",feel:"Внутренняя часть бедра и бок. Важно для таза."},
-  roller:{n:"Ролик для пресса",img:"Ab_Roller",how:["На коленях, ролик под плечами.","Катись вперёд, пока держишь поясницу ровной.","Вернись за счёт пресса. Начинай с короткой амплитуды."],err:"Прогиб в пояснице. Короче амплитуда.",feel:"Весь пресс."},
-  bridge1:{n:"Ягодичный мост на одной ноге",img:"Single_Leg_Glute_Bridge",how:["Лёг, одна стопа на полу, вторая нога поднята.","Подними таз, сожми ягодицу на 2 с.","Сложнее — лопатки на диване."],err:"Таз перекашивается.",feel:"Ягодица опорной ноги."},
-  side:{n:"Боковая планка",img:"Side_Bridge",how:["На локте, тело прямое.","Держи 30–45 с, потом другая сторона."],err:"Провисает таз.",feel:"Косые мышцы."},
-  rcrunch:{n:"Обратные скручивания",img:"Reverse_Crunch",how:["Лёг, ноги согнуты над тазом.","Подкручивай таз к груди, отрывая его от пола.","Медленно опусти."],err:"Мах ногами вместо подкручивания.",feel:"Низ пресса."},
-  rlunge:{n:"Выпады назад",img:"Dumbbell_Rear_Lunge",how:["Шагни назад и опустись до касания коленом.","Толкнись передней ногой и вернись."],err:"Корпус падает вперёд.",feel:"Ягодицы."},
-  cpush:{n:"Узкие отжимания",img:"Push-Ups_-_Close_Triceps_Position",how:["Руки на ширине плеч или уже.","Локти вдоль тела, опускайся до пола."],err:"Локти в стороны.",feel:"Трицепс."},
-  bike:{n:"Велотренажёр спокойно",img:null,how:["Пульс 115–135. Можешь говорить фразами.","30–45 мин, каждую неделю +5 мин до 60.","На часах запусти «Велотренажёр»."],err:"Уходить в тяжёлый темп — это другая тренировка.",feel:"Лёгкая одышка, без жжения в ногах."},
-  hipflex:{n:"Растяжка таза",img:"Kneeling_Hip_Flexor",how:["Выпад на колене: таз вперёд, ягодица задней ноги сжата — 40 с на сторону, 2 раза.","«Лягушка»: на четвереньках колени широко, таз назад — 40 с.","Свободнее таз — лучше в постели и в приседе."],err:"Прогиб в пояснице вместо растяжения бедра.",feel:"Перед бедра, пах."}
+  squat:{t:"bar",big:1,n:"Присед со штангой",img:"Barbell_Squat",how:["Гриф на верх спины, не на шею. Стопы чуть шире плеч, носки немного врозь.","Вдохни животом, напряги пресс и садись: таз назад и вниз, колени идут по направлению носков.","Глубина — бёдра хотя бы параллельно полу. Пятки не отрываются.","Вставай, толкаясь всей стопой, спина под одним углом всё время."],err:"Колени заваливаются внутрь или круглится поясница внизу. Убери вес и сядь глубже с паузой.",feel:"Передняя часть бедра и ягодицы."},
+  goblet:{t:"db",n:"Гоблет-присед",img:"Goblet_Squat",how:["Гантель или гиря у груди, локти вниз.","Садись между колен, спина прямая, грудь вперёд.","Пауза внизу 2–3 с, потом встал."],err:"Пятки отрываются — поставь стопы шире.",feel:"Бёдра и ягодицы."},
+  rdl:{t:"bar",big:1,n:"Румынская тяга",img:"Romanian_Deadlift",how:["Встал прямо со штангой или гантелями, колени чуть согнуты и так остаются.","Отводи таз назад, гриф скользит по бёдрам вниз. Спина прямая.","Опускайся, пока не потянет заднюю часть бедра (обычно чуть ниже колен).","Вставай, сжимая ягодицы."],err:"Круглая спина или приседание вместо наклона. Думай «таз назад», а не «вниз».",feel:"Задняя часть бедра и ягодицы. Не поясница."},
+  bulg:{t:"db",n:"Болгарские выпады",img:"One_Leg_Barbell_Squat",how:["Встань спиной к скамье, носок задней ноги на скамье. Удобнее с гантелями в руках.","Передняя стопа так далеко, чтобы колено внизу было над стопой.","Опускайся вертикально вниз до лёгкого касания коленом пола.","Толкайся передней пяткой. Все повторы на одну ногу, потом на другую."],err:"Шаг слишком короткий — колено уходит далеко вперёд и болит.",feel:"Ягодица и бедро передней ноги."},
+  bench:{t:"db",n:"Жим гантелей лёжа",img:"Dumbbell_Bench_Press",how:["Лёг на скамью, лопатки сведены, стопы на полу.","Опускай гантели к груди, локти под углом ~45° к телу.","Выжми вверх."],err:"Локти в стороны под 90° — нагрузка на плечо.",feel:"Грудь и трицепс."},
+  deadbug:{t:"bw",n:"Dead bug («жук»)",img:"Dead_Bug",how:["Лёг на спину, руки вверх, ноги согнуты над тазом.","Прижми поясницу к полу и не отрывай.","Медленно опускай противоположные руку и ногу к полу, вернул, сменил сторону."],err:"Поясница отрывается — уменьши амплитуду.",feel:"Глубокий пресс."},
+  hingeHome:{t:"db",n:"Румынская тяга с гантелью или рюкзаком",img:"Stiff-Legged_Dumbbell_Deadlift",how:["Вес в руках, колени чуть согнуты.","Таз назад, спина прямая, опускай до натяжения сзади бедра.","Вставай, сжимая ягодицы. Медленно вниз за 3 секунды."],err:"Круглая спина.",feel:"Задняя часть бедра, ягодицы."},
+  push:{t:"bw",n:"Отжимания",img:"Pushups",how:["Руки чуть шире плеч, тело прямое от головы до пяток.","Опускайся грудью почти до пола, локти под 45°.","Выжался. Тяжело — с колен или руками на диван."],err:"Провисает поясница — напряги пресс и ягодицы.",feel:"Грудь, трицепс."},
+  thrust:{t:"bar",big:1,n:"Ягодичный мост со штангой (хип-траст)",img:"Barbell_Hip_Thrust",how:["Сел на пол спиной к скамье, лопатки на краю скамьи. Гриф на тазу, под ним мягкая подкладка.","Стопы на ширине плеч, так, чтобы вверху голень была вертикальной.","Поднимай таз, пока тело не станет прямым от плеч до колен. Сожми ягодицы на 1 с.","Опустился и сразу следующий."],err:"Прогиб в пояснице вверху. Подбородок к груди, рёбра вниз.",feel:"Ягодицы. Если бёдра сзади — стопы ближе."},
+  legpress:{t:"mach",big:1,n:"Жим ногами",img:"Leg_Press",how:["Спина и таз прижаты к спинке.","Стопы на платформе высоко и на ширине плеч — так больше ягодиц.","Опускай, пока таз не начнёт отрываться, потом выжми. Колени не выпрямляй до щелчка."],err:"Таз отрывается от сиденья внизу — меньше глубина.",feel:"Ягодицы и бёдра."},
+  pull:{t:"bw",n:"Подтягивания или тяга верхнего блока",img:"Pullups",how:["Хват чуть шире плеч.","Сначала сведи лопатки вниз, потом тяни грудь к перекладине.","Опускайся полностью. Если подтягиваешься меньше 6 раз — делай тягу верхнего блока и пиши её вес."],err:"Рывки ногами и неполная амплитуда.",feel:"Широчайшие, бицепс."},
+  calf:{t:"mach",n:"Подъёмы на носки",img:"Standing_Calf_Raises",how:["Носки на краю ступеньки или блина, пятки свисают.","Опусти пятки вниз до растяжения, потом поднимись максимально высоко, пауза 1 с.","Медленно. Это защита голени для будущего бега."],err:"Пружинить быстро без паузы.",feel:"Икры."},
+  pallof:{t:"mach",n:"Pallof press (антиротация)",img:"Pallof_Press",how:["Встань боком к блоку или резинке, ручка у груди.","Выпрями руки вперёд и держи 2 с — корпус не должен поворачиваться.","Вернул к груди. Потом другим боком."],err:"Корпус крутится за тросом — встань ближе к блоку.",feel:"Косые мышцы и весь кор."},
+  hang:{t:"bw",n:"Подъём ног в висе",img:"Hanging_Leg_Raise",how:["Вис на перекладине, не раскачиваться.","Поднимай колени к груди, подкручивая таз.","Медленно опусти. Сильнее — прямые ноги."],err:"Раскачка и мах ногами.",feel:"Низ пресса."},
+  trap:{t:"bar",big:1,n:"Становая тяга с трэп-грифа",img:"Trap_Bar_Deadlift",how:["Встань в центр грифа, присядь и возьмись за ручки.","Спина прямая, грудь вперёд, вдох животом.","Толкай пол ногами и вставай. Вверху не отклоняйся назад.","Нет трэп-грифа — обычная становая с лёгкого веса, гриф близко к ногам."],err:"Круглая спина при старте. Сначала спина ровно, потом тянем.",feel:"Ноги, ягодицы, вся спина."},
+  lunge:{t:"db",n:"Выпады в ходьбе с гантелями",img:"Dumbbell_Lunges",how:["Гантели в руках, корпус прямо.","Широкий шаг вперёд, опустись до лёгкого касания коленом.","Встань и шагни другой ногой вперёд."],err:"Короткий шаг и колено далеко за носком.",feel:"Ягодицы и бёдра."},
+  row:{t:"db",n:"Тяга гантели в наклоне",img:"One-Arm_Dumbbell_Row",how:["Колено и рука на скамье, спина ровная.","Тяни гантель к поясу, локоть вдоль тела.","Медленно опусти. Дома — с рюкзаком."],err:"Тянуть рукой с поворотом корпуса.",feel:"Широчайшие."},
+  dips:{t:"bw",n:"Отжимания на брусьях",img:"Dips_-_Triceps_Version",how:["Упор на брусьях, руки прямые.","Опускайся, пока плечо не станет параллельно полу.","Выжмись. Тяжело — гравитрон или жим гантелей сидя."],err:"Слишком глубоко — болит плечо.",feel:"Трицепс, грудь."},
+  cph:{t:"time",n:"Копенгагенская планка",img:"Side_Bridge",how:["Боковая планка на локте (на фото — простой вариант).","Усложнение: верхняя нога на скамье или диване, нижняя висит.","Держи тело прямым 15–30 с, потом другая сторона."],err:"Таз проваливается вниз.",feel:"Внутренняя часть бедра и бок. Важно для таза."},
+  roller:{t:"bw",n:"Ролик для пресса",img:"Ab_Roller",how:["На коленях, ролик под плечами.","Катись вперёд, пока держишь поясницу ровной.","Вернись за счёт пресса. Начинай с короткой амплитуды."],err:"Прогиб в пояснице. Короче амплитуда.",feel:"Весь пресс."},
+  bridge1:{t:"bw",n:"Ягодичный мост на одной ноге",img:"Single_Leg_Glute_Bridge",how:["Лёг, одна стопа на полу, вторая нога поднята.","Подними таз, сожми ягодицу на 2 с.","Сложнее — лопатки на диване."],err:"Таз перекашивается.",feel:"Ягодица опорной ноги."},
+  side:{t:"time",n:"Боковая планка",img:"Side_Bridge",how:["На локте, тело прямое.","Держи 30–45 с, потом другая сторона."],err:"Провисает таз.",feel:"Косые мышцы."},
+  rcrunch:{t:"bw",n:"Обратные скручивания",img:"Reverse_Crunch",how:["Лёг, ноги согнуты над тазом.","Подкручивай таз к груди, отрывая его от пола.","Медленно опусти."],err:"Мах ногами вместо подкручивания.",feel:"Низ пресса."},
+  rlunge:{t:"db",n:"Выпады назад",img:"Dumbbell_Rear_Lunge",how:["Шагни назад и опустись до касания коленом.","Толкнись передней ногой и вернись."],err:"Корпус падает вперёд.",feel:"Ягодицы."},
+  cpush:{t:"bw",n:"Узкие отжимания",img:"Push-Ups_-_Close_Triceps_Position",how:["Руки на ширине плеч или уже.","Локти вдоль тела, опускайся до пола."],err:"Локти в стороны.",feel:"Трицепс."},
+  bike:{t:"cardio",n:"Велотренажёр спокойно",img:null,how:["Пульс 115–135. Можешь говорить фразами.","30–45 мин, каждую неделю +5 мин до 60.","На часах запусти «Велотренажёр»."],err:"Уходить в тяжёлый темп — это другая тренировка.",feel:"Лёгкая одышка, без жжения в ногах."},
+  hipflex:{t:"check",n:"Растяжка таза",img:"Kneeling_Hip_Flexor",how:["Выпад на колене: таз вперёд, ягодица задней ноги сжата — 40 с на сторону, 2 раза.","«Лягушка»: на четвереньках колени широко, таз назад — 40 с.","Свободнее таз — лучше в постели и в приседе."],err:"Прогиб в пояснице вместо растяжения бедра.",feel:"Перед бедра, пах."}
 };
 const DAYS = {
   A:{name:"Тренировка A",what:"Присед — ноги и пресс",
      gym:[["squat","4 × 6–10"],["rdl","3 × 8–12"],["bulg","3 × 8–12 на ногу"],["bench","3 × 8–12"],["deadbug","3 × 8 на сторону"]],
-     home:[["goblet","4 × 8–12"],["hingeHome","3 × 10–15"],["bulg","3 × 10–15 на ногу"],["push","3 × сколько сможешь −2"],["deadbug","3 × 8 на сторону"]]},
+     home:[["goblet","4 × 8–12"],["hingeHome","3 × 10–15"],["bulg","3 × 10–15 на ногу"],["push","3 × 8–20"],["deadbug","3 × 8 на сторону"]]},
   B:{name:"Тренировка B",what:"Ягодицы и спина",
      gym:[["thrust","4 × 8–12"],["legpress","3 × 10–15"],["pull","3 × 6–12"],["calf","3 × 12–20"],["pallof","3 × 10 на сторону"],["hang","3 × 8–15"]],
      home:[["bridge1","4 × 10–15 на ногу"],["bulg","3 × 10–15 на ногу"],["row","3 × 10–15 на руку"],["calf","3 × 15–20"],["side","3 × 30–45 с"],["rcrunch","3 × 10–15"]]},
   C:{name:"Тренировка C",what:"Тяга — ноги, спина, кор",
      gym:[["trap","4 × 5–8"],["lunge","3 × 10–12 на ногу"],["row","3 × 8–12 на руку"],["dips","3 × 8–12"],["cph","3 × 15–30 с"],["roller","3 × 6–12"]],
-     home:[["hingeHome","4 × 10–15"],["rlunge","3 × 10–12 на ногу"],["row","3 × 12–15 на руку"],["cpush","3 × сколько сможешь −2"],["cph","3 × 15–30 с"],["rcrunch","3 × 10–15"]]},
+     home:[["hingeHome","4 × 10–15"],["rlunge","3 × 10–12 на ногу"],["row","3 × 12–15 на руку"],["cpush","3 × 8–20"],["cph","3 × 15–30 с"],["rcrunch","3 × 10–15"]]},
   Z2:{name:"Вело и растяжка",what:"Спокойное кардио",gym:[["bike","30–45 мин"],["hipflex","8 мин"]],home:null}
 };
 const ORDER=["A","B","C"];
 const store={get(k,d){try{const v=localStorage.getItem("fit2:"+k);return v==null?d:JSON.parse(v)}catch(e){return d}},
              set(k,v){try{localStorage.setItem("fit2:"+k,JSON.stringify(v))}catch(e){}}};
+const $=id=>document.getElementById(id);
+const pad=n=>String(n).padStart(2,"0");
+const today=()=>{const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`};
+const ruDate=iso=>iso.split("-").reverse().join(".");
+const fmtKg=v=>String(+(+v).toFixed(2)).replace(".",",");
 let st={day:store.get("day","A"),place:store.get("place","gym")};
-if(store.get("seenHelp",false)===false) document.getElementById("helpBox").open=true;
-document.getElementById("helpBox").addEventListener("toggle",()=>store.set("seenHelp",true));
+if(!DAYS[st.day])st.day="A";
+if(store.get("seenHelp",false)===false) $("helpBox").open=true;
+$("helpBox").addEventListener("toggle",()=>store.set("seenHelp",true));
 
-function press(id,v){document.querySelectorAll("#"+id+" button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===v))}
+// ---------- История и подсказки ----------
+const sessions=()=>store.get("sessions",[]);
+function addSession(s){const all=sessions().filter(x=>x.id!==s.id);all.push(s);all.sort((a,b)=>a.id<b.id?-1:1);store.set("sessions",all.slice(-200))}
+function lastSets(k){const all=sessions();for(let i=all.length-1;i>=0;i--){const e=(all[i].ex||[]).find(x=>x.k===k&&x.sets&&x.sets.length);if(e)return {date:all[i].date,sets:e.sets}}return null}
+function parseDose(d){const m=d.match(/^(\d+)\s*×\s*(\d+)(?:–(\d+))?/);if(!m)return null;return {sets:+m[1],lo:+m[2],hi:+(m[3]||m[2])}}
+function stepOf(k){const e=EX[k];if(e.t==="db")return 2;if(e.t==="bw")return 2.5;return 2.5}
+function incOf(k){return EX[k].big?5:(EX[k].t==="db"?2:2.5)}
+function coach(){return store.get("coach",null)}
+function suggest(k,dose){
+  const p=parseDose(dose),e=EX[k],c=coach(),tg=c&&c.targets&&c.targets[k];
+  const last=lastSets(k);
+  if(tg)return {kg:tg.kg!=null?tg.kg:(last?last.sets[0].kg:null),reps:p?p.hi:null,text:`Тренер: ${tg.kg!=null?fmtKg(tg.kg)+" кг":""}${tg.reps?" × "+tg.reps:""}${tg.note?" — "+tg.note:""}`,coach:true};
+  if(!last||!p){return {kg:null,reps:p?p.lo:null,text:e.t==="time"?"Держи с запасом 5–10 секунд.":(e.t==="bw"?"Своим весом. Оставляй 2 повтора в запасе.":"Первый раз: подбери вес, чтобы в конце подхода оставалось ещё 2 повтора.")}}
+  const top=Math.max(...last.sets.map(s=>+s.kg||0)),reps=last.sets.map(s=>+s.reps||0);
+  const lastTxt=last.sets.map(s=>(s.kg?fmtKg(s.kg)+"×":"")+s.reps).join(", ");
+  if(e.t==="bw"||e.t==="time"){const allTop=reps.every(r=>r>=p.hi);
+    return {kg:top||null,reps:allTop?p.hi:Math.min(p.hi,Math.max(...reps)),text:`Прошлый раз ${lastTxt}. `+(allTop?(e.t==="time"?"Держи дольше или усложни.":"Все на максимуме — добавь вес (рюкзак/пояс) или усложни."):`Добей до ${p.hi} в каждом подходе.`)}}
+  if(reps.every(r=>r>=p.hi)){const kg=top+incOf(k);return {kg,reps:p.lo,text:`Прошлый раз ${lastTxt} — все на ${p.hi}. Сегодня ${fmtKg(kg)} кг.`}}
+  return {kg:top,reps:Math.min(p.hi,Math.max(...reps)),text:`Прошлый раз ${lastTxt}. Сегодня ${fmtKg(top)} кг, добей до ${p.hi} в каждом.`};
+}
+function plates(total,bar){let side=(total-bar)/2;if(side<0)return null;if(side===0)return "пустой гриф";const out=[];for(const p of [25,20,15,10,5,2.5,1.25]){while(side>=p-1e-9){out.push(p);side-=p}}
+  return out.length?`на сторону ${out.map(fmtKg).join(" + ")}`+(side>0.01?` (+${fmtKg(side)} не набрать)`:""):null}
+function warmup(kg,bar){if(!kg||kg<bar+10)return null;const r=v=>Math.max(bar,Math.round(v/2.5)*2.5);return `Разминка: ${fmtKg(bar)}×10, ${fmtKg(r(kg*.5))}×5, ${fmtKg(r(kg*.7))}×3`}
+
+// ---------- Черновик текущей тренировки ----------
+const draftKey=()=>`draft:${st.day}:${st.place}`;
+const getDraft=()=>store.get(draftKey(),{});
+function setDraft(d){store.set(draftKey(),d);report()}
 function list(){const d=DAYS[st.day];return (st.place==="home"&&d.home)?d.home:d.gym}
 function ytUrl(n){return "https://www.youtube.com/results?search_query="+encodeURIComponent(n+" техника")}
+function press(id,v){document.querySelectorAll("#"+id+" button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===v))}
+
 function render(){
   press("segPlace",st.place);press("segDay",st.day);
-  const d=DAYS[st.day];document.getElementById("dayName").textContent=d.name;document.getElementById("dayWhat").textContent=d.what+(st.place==="home"&&d.home?" · дома":"");
-  const box=document.getElementById("cards");box.innerHTML="";
-  const logKey="log:"+st.day+":"+st.place;const saved=store.get(logKey,{});
+  const d=DAYS[st.day];$("dayName").textContent=d.name;$("dayWhat").textContent=d.what+(st.place==="home"&&d.home?" · дома":"");
+  renderCoach();
+  const box=$("cards");box.innerHTML="";const draft=getDraft();const bar=+store.get("bar",20)||20;
   list().forEach(([k,dose],i)=>{
-    const e=EX[k];const c=document.createElement("article");c.className="card"+(saved[i]&&saved[i].done?" done":"");
+    const e=EX[k];const c=document.createElement("article");c.className="card";
     const pics=e.img?`<div class="pics"><figure><img loading="lazy" src="img/${e.img}-0.jpg" alt=""><figcaption>начало</figcaption></figure><figure><img loading="lazy" src="img/${e.img}-1.jpg" alt=""><figcaption>конец</figcaption></figure></div>`:"";
-    c.innerHTML=pics+`<div class="cbody">
-      <div class="chead"><div class="cname"></div><div class="dose"></div></div>
-      <ol class="how"></ol><p class="err"></p><p class="feel"></p>
-      <a class="small" target="_blank" rel="noopener">Видео техники на YouTube ↗</a>
-      <div class="logrow"><input type="text" inputmode="text" placeholder="вес×повторы, напр. 40×10,10,8" id="in-${st.day}-${st.place}-${i}" aria-label="Вес и повторы">
-      <label class="chk"><input type="checkbox"> Сделал</label></div></div>`;
+    c.innerHTML=pics+`<div class="cbody"><div class="chead"><div class="cname"></div><div class="dose"></div></div>
+      <details class="tech"><summary>Как делать</summary><ol class="how"></ol><p class="err"></p><p class="feel"></p><a class="small" target="_blank" rel="noopener">Видео техники на YouTube ↗</a></details>
+      <p class="hint"></p><p class="warm small muted" hidden></p><div class="sets"></div><p class="plates small muted" hidden></p></div>`;
     c.querySelector(".cname").textContent=(i+1)+". "+e.n;c.querySelector(".dose").textContent=dose;
     const ol=c.querySelector(".how");e.how.forEach(t=>{const li=document.createElement("li");li.textContent=t;ol.appendChild(li)});
-    c.querySelector(".err").textContent="Частая ошибка: "+e.err;c.querySelector(".feel").textContent="Где чувствовать: "+e.feel;
-    c.querySelector("a").href=ytUrl(e.n);
-    const inp=c.querySelector("input[type=text]"),cb=c.querySelector("input[type=checkbox]");
-    inp.value=(saved[i]&&saved[i].v)||"";cb.checked=!!(saved[i]&&saved[i].done);
-    const save=()=>{const s=store.get(logKey,{});s[i]={v:inp.value,done:cb.checked};store.set(logKey,s);c.classList.toggle("done",cb.checked);report()};
-    inp.addEventListener("input",save);cb.addEventListener("change",save);
+    c.querySelector(".err").textContent="Частая ошибка: "+e.err;c.querySelector(".feel").textContent="Где чувствовать: "+e.feel;c.querySelector("a").href=ytUrl(e.n);
+    const sg=suggest(k,dose);const hint=c.querySelector(".hint");hint.textContent=sg.text;if(sg.coach)hint.classList.add("coach");
+    const setsBox=c.querySelector(".sets");
+    if(e.t==="cardio"||e.t==="check"){
+      const cur=draft[k]||{done:false,min:e.t==="cardio"?40:null};
+      setsBox.innerHTML=`<div class="setrow one">${e.t==="cardio"?`<span class="lbl">мин</span><button class="stp" data-d="-5" aria-label="меньше">−</button><input class="num-in" inputmode="numeric" aria-label="минуты"><button class="stp" data-d="5" aria-label="больше">+</button>`:`<span class="lbl">8 мин</span>`}<button class="ok" aria-label="Сделал">✓</button></div>`;
+      const inp=setsBox.querySelector("input"),ok=setsBox.querySelector(".ok");if(inp)inp.value=cur.min;
+      const sync=()=>{ok.classList.toggle("on",!!cur.done);c.classList.toggle("done",!!cur.done)};sync();
+      setsBox.querySelectorAll(".stp").forEach(b=>b.onclick=()=>{cur.min=Math.max(0,(+inp.value||0)+ +b.dataset.d);inp.value=cur.min;const dd=getDraft();dd[k]=cur;setDraft(dd)});
+      if(inp)inp.oninput=()=>{cur.min=+inp.value||0;const dd=getDraft();dd[k]=cur;setDraft(dd)};
+      ok.onclick=()=>{cur.done=!cur.done;sync();const dd=getDraft();dd[k]=cur;setDraft(dd);if(cur.done)keepAwake()};
+    } else {
+      const p=parseDose(dose)||{sets:3,lo:10,hi:10};
+      let rows=draft[k];
+      if(!rows){const last=lastSets(k);rows=Array.from({length:p.sets},(_,j)=>({kg:e.t==="bw"||e.t==="time"?(sg.kg||""):(sg.kg!=null?sg.kg:""),reps:sg.reps!=null?sg.reps:p.lo,done:false}));}
+      const kgOn=!(e.t==="time");
+      rows.forEach((r,j)=>{
+        const row=document.createElement("div");row.className="setrow";
+        row.innerHTML=`<span class="sn">${j+1}</span>`+(kgOn?`<span class="grp"><button class="stp" data-f="kg" data-d="-1" aria-label="меньше кг">−</button><input class="num-in" data-f="kg" inputmode="decimal" placeholder="${e.t==="bw"?"свой":"кг"}" aria-label="кг"><button class="stp" data-f="kg" data-d="1" aria-label="больше кг">+</button></span><span class="x">×</span>`:"")+
+          `<span class="grp"><button class="stp" data-f="reps" data-d="-1" aria-label="меньше">−</button><input class="num-in" data-f="reps" inputmode="numeric" aria-label="${e.t==="time"?"секунды":"повторы"}"><button class="stp" data-f="reps" data-d="1" aria-label="больше">+</button></span>${e.t==="time"?'<span class="lbl">с</span>':""}<button class="ok" aria-label="Подход сделан">✓</button>`;
+        const ins={};row.querySelectorAll("input").forEach(x=>{ins[x.dataset.f]=x;x.value=r[x.dataset.f]===""||r[x.dataset.f]==null?"":String(r[x.dataset.f]).replace(".",",")});
+        const ok=row.querySelector(".ok");const paint=()=>{ok.classList.toggle("on",r.done);row.classList.toggle("on",r.done)};paint();
+        const save=()=>{const dd=getDraft();dd[k]=rows;setDraft(dd);c.classList.toggle("done",rows.every(x=>x.done));showPlates()};
+        row.querySelectorAll(".stp").forEach(b=>b.onclick=()=>{const f=b.dataset.f;const step=f==="kg"?stepOf(k):(e.t==="time"?5:1);
+          let v=(parseFloat(String(ins[f].value).replace(",","."))||0)+ +b.dataset.d*step;v=Math.max(0,+v.toFixed(2));
+          r[f]=f==="kg"&&v===0&&e.t==="bw"?"":v;ins[f].value=r[f]===""?"":String(r[f]).replace(".",",");
+          // вес первого подхода тянет за собой следующие неотмеченные
+          if(f==="kg")rows.forEach((o,m)=>{if(m>j&&!o.done){o.kg=r.kg;const inp=setsBox.querySelectorAll(".setrow")[m]?.querySelector('input[data-f="kg"]');if(inp)inp.value=String(o.kg).replace(".",",")}});
+          save()});
+        row.querySelectorAll("input").forEach(x=>x.oninput=()=>{const v=String(x.value).replace(",",".");r[x.dataset.f]=v===""?"":+v;save()});
+        ok.onclick=()=>{r.done=!r.done;paint();save();if(r.done){keepAwake();const last=j===rows.length-1;rest.start(i===0?150:90,last?"Следующее упражнение":"Отдых")}};
+        setsBox.appendChild(row);
+      });
+      c.classList.toggle("done",rows.every(x=>x.done));
+      const plEl=c.querySelector(".plates"),wEl=c.querySelector(".warm");
+      function showPlates(){if(e.t!=="bar"){return}const kg=+rows[0].kg||0;const pl=kg?plates(kg,bar):null;plEl.hidden=!pl;if(pl)plEl.textContent=`${fmtKg(kg)} кг: гриф ${bar} + ${pl}`;
+        const w=i===0?warmup(kg,bar):null;wEl.hidden=!w;if(w)wEl.textContent=w}
+      showPlates();
+    }
     box.appendChild(c);
   });
   report();
 }
-function report(){
-  const d=DAYS[st.day],s=store.get("log:"+st.day+":"+st.place,{});
-  const dt=new Date().toLocaleDateString("ru-RU");
-  const lines=list().map(([k,dose],i)=>{const r=s[i]||{};return `- ${EX[k].n}: ${r.v||"—"}${r.done?" ✓":""}`});
-  const kg=document.getElementById("kegelToday").checked, w=document.getElementById("bodyW").value.trim(), m=document.getElementById("mood").value.trim();
-  const tail=[`- Кегель: ${kg?"да":"нет"}`];if(w)tail.push(`- Вес утром: ${w} кг`);tail.push(`- Самочувствие: ${m||"—"}`);
-  document.getElementById("report").value=`отчёт fit ${dt}: ${d.name} (${st.place==="home"?"дом":"зал"})\n`+lines.concat(tail).join("\n");
+
+// ---------- Отчёт ----------
+function buildSession(){
+  const d=DAYS[st.day],draft=getDraft();
+  const ex=list().map(([k])=>{const e=EX[k],v=draft[k];
+    if(e.t==="cardio"||e.t==="check")return {k,done:!!(v&&v.done),min:v&&v.min!=null?+v.min:null};
+    return {k,sets:(v||[]).filter(s=>s.done).map(s=>({kg:s.kg===""?null:+s.kg,reps:+s.reps||0}))}});
+  const w=$("bodyW").value.trim().replace(",",".");
+  return {id:today()+"T"+new Date().toTimeString().slice(0,5)+"-"+st.day,date:today(),kind:"workout",day:st.day,place:st.place,ex,
+    kegel:$("kegelToday").checked,bw:w?+w:null,mood:$("mood").value.trim()};
 }
-function seg(id,f){document.getElementById(id).addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;st[f]=b.dataset.v;store.set(f,st[f]);render()})}
-seg("segPlace","place");seg("segDay","day");
-function toast(t){const el=document.getElementById("toast");el.textContent=t;el.hidden=false;setTimeout(()=>el.hidden=true,2500)}
-["kegelToday","bodyW","mood"].forEach(id=>{const el=document.getElementById(id);const k="x:"+id;
+function sessionText(s){
+  if(s.kind!=="workout")return s.text;
+  const d=DAYS[s.day];const lines=s.ex.map(x=>{const e=EX[x.k];
+    if(e.t==="cardio")return `- ${e.n}: ${x.done?(x.min||"?")+" мин ✓":"—"}`;
+    if(e.t==="check")return `- ${e.n}: ${x.done?"✓":"—"}`;
+    if(!x.sets.length)return `- ${e.n}: —`;
+    return `- ${e.n}: `+x.sets.map(t=>(t.kg?fmtKg(t.kg)+"×":"")+t.reps+(e.t==="time"?" с":"")).join(", ")});
+  lines.push(`- Кегель: ${s.kegel?"да":"нет"}`);if(s.bw)lines.push(`- Вес утром: ${fmtKg(s.bw)} кг`);lines.push(`- Самочувствие: ${s.mood||"—"}`);
+  return `отчёт fit ${ruDate(s.date)}: ${d.name} (${s.place==="home"?"дом":"зал"})\n`+lines.join("\n");
+}
+const fileBody=s=>sessionText(s)+"\n\n```json\n"+JSON.stringify(s)+"\n```\n";
+function report(){$("report").value=sessionText(buildSession())}
+function toast(t){const el=$("toast");el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,2800)}
+["kegelToday","bodyW","mood"].forEach(id=>{const el=$(id);const k="x:"+id;
   if(el.type==="checkbox")el.checked=store.get(k,false);else el.value=store.get(k,"");
   el.addEventListener(el.type==="checkbox"?"change":"input",()=>{store.set(k,el.type==="checkbox"?el.checked:el.value);report()})});
-function copyText(t){const ta=document.getElementById("report");
-  const fallback=()=>{ta.focus();ta.select();toast("Выделил — скопируй вручную")};
+function copyText(t){const ta=$("report");const fallback=()=>{ta.focus();ta.select();toast("Выделил — скопируй вручную")};
   try{navigator.clipboard.writeText(t).then(()=>toast("Скопировано"),fallback)}catch(e){fallback()}}
 
-// Доставка отчётов: очередь на телефоне → приватный репо на GitHub, когда есть сеть
+// ---------- Доставка: очередь на телефоне → приватный репо ----------
 const REPO="kireev-duty/fit-log";
-const pad=n=>String(n).padStart(2,"0");
-function fileName(day){const d=new Date();return `reports/${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}-${day}.md`}
 function b64(s){const bytes=new TextEncoder().encode(s);let bin="";bytes.forEach(b=>bin+=String.fromCharCode(b));return btoa(bin)}
-function getHist(){return store.get("hist",[]).map(x=>x.file||x.delivered!==undefined?x:{...x,file:null,delivered:false})}
-function setHist(h){store.set("hist",h.slice(0,30));renderHist()}
+function unb64(s){const bin=atob(s.replace(/\n/g,""));return new TextDecoder().decode(Uint8Array.from(bin,c=>c.charCodeAt(0)))}
+const getHist=()=>store.get("hist",[]);
+function setHist(h){store.set("hist",h.slice(0,40));renderHist()}
 let syncing=false,lastErr="";
+const ghHeaders=t=>({"Authorization":"Bearer "+t,"Accept":"application/vnd.github+json","Content-Type":"application/json"});
 async function putFile(token,path,text,msg){
-  const r=await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURI(path)}`,{method:"PUT",
-    headers:{"Authorization":"Bearer "+token,"Accept":"application/vnd.github+json","Content-Type":"application/json"},
-    body:JSON.stringify({message:msg,content:b64(text)})});
-  if(r.status===201||r.status===200||r.status===422)return true; // 422: файл уже есть — значит доставлен раньше
+  const r=await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURI(path)}`,{method:"PUT",headers:ghHeaders(token),body:JSON.stringify({message:msg,content:b64(text)})});
+  if(r.status===201||r.status===200||r.status===422)return true;
   if(r.status===401||r.status===403||r.status===404)throw new Error("key");
   throw new Error("net");
 }
+async function getFile(token,path){
+  const r=await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURI(path)}`,{headers:ghHeaders(token),cache:"no-store"});
+  if(r.status===404)return null;if(r.status===401||r.status===403)throw new Error("key");if(!r.ok)throw new Error("net");
+  return r.json();
+}
+function queue(s){const h=getHist();const name=`reports/${s.id.replace(/[:T]/g,m=>m===":"?"":"-")}.md`;
+  h.unshift({head:sessionText(s).split("\n")[0],text:sessionText(s),body:fileBody(s),file:name,delivered:false,at:Date.now()});setHist(h);syncQueue()}
 async function syncQueue(){
   const token=store.get("token","");const h=getHist();
   if(!h.some(x=>x.file&&!x.delivered)){renderHist();return}
   if(!token){lastErr="nokey";renderHist();return}
   if(!navigator.onLine){lastErr="offline";renderHist();return}
   if(syncing)return;syncing=true;lastErr="";
-  try{for(const x of h){if(!x.file||x.delivered)continue;
-      await putFile(token,x.file,x.text+"\n","report "+x.file.slice(8,-3));x.delivered=true;setHist(h)}}
+  try{for(const x of h){if(!x.file||x.delivered)continue;await putFile(token,x.file,x.body||(x.text+"\n"),"report "+x.file.slice(8,-3));x.delivered=true;setHist(h)}}
   catch(e){lastErr=e.message==="key"?"badkey":"offline"}
   finally{syncing=false;renderHist();renderSettings()}
 }
 function saveReport(){
-  const text=document.getElementById("report").value;const h=getHist();
-  h.unshift({text,file:fileName(st.day),delivered:false,at:Date.now()});setHist(h);
-  store.set("log:"+st.day+":"+st.place,{});["kegelToday","bodyW","mood"].forEach(id=>store.set("x:"+id,id==="kegelToday"?false:""));
-  document.getElementById("kegelToday").checked=false;document.getElementById("bodyW").value="";document.getElementById("mood").value="";
-  const i=ORDER.indexOf(st.day);st.day=i<0?"A":ORDER[(i+1)%3];store.set("day",st.day);render();window.scrollTo(0,0);
+  const s=buildSession();
+  if(!s.ex.some(x=>(x.sets&&x.sets.length)||x.done)){toast("Отметь хотя бы один подход ✓");return}
+  addSession(s);queue(s);
+  if(s.kegel)markKegel(false);
+  store.set(draftKey(),{});["kegelToday","bodyW","mood"].forEach(id=>store.set("x:"+id,id==="kegelToday"?false:""));
+  $("kegelToday").checked=false;$("bodyW").value="";$("mood").value="";
+  const i=ORDER.indexOf(st.day);st.day=i<0?"A":ORDER[(i+1)%3];store.set("day",st.day);
+  rest.stop();releaseAwake();render();renderProgress();window.scrollTo(0,0);
   toast(store.get("token","")?"Сохранено, отправляю":"Сохранено. Добавь ключ в «Настройках», чтобы отчёты уходили сами");
-  syncQueue();
 }
 function shareText(text){if(navigator.share){navigator.share({text}).catch(()=>{})}else copyText(text)}
 function stText(x){if(!x.file)return["в Telegram/копия",""];if(x.delivered)return["доставлен ✓","sent"];
-  if(lastErr==="nokey")return["ждёт ключа — см. Настройки",""];if(lastErr==="badkey")return["ключ не подходит — см. Настройки",""];
-  return["ждёт интернета",""]}
-function renderHist(){const h=getHist(),ul=document.getElementById("hist");ul.innerHTML="";
-  document.getElementById("histEmpty").hidden=h.length>0;
-  h.forEach(x=>{const li=document.createElement("li");const head=x.text.split("\n")[0].replace(/^отчёт fit /,"");
+  if(lastErr==="nokey")return["ждёт ключа — см. Настройки",""];if(lastErr==="badkey")return["ключ не подходит — см. Настройки",""];return["ждёт интернета",""]}
+function renderHist(){const h=getHist(),ul=$("hist");ul.innerHTML="";$("histEmpty").hidden=h.length>0;
+  h.slice(0,15).forEach(x=>{const li=document.createElement("li");const head=(x.head||x.text.split("\n")[0]).replace(/^отчёт fit /,"");
     li.innerHTML='<div><div class="hh"></div><div class="st"></div></div><button type="button">В Telegram</button>';
     li.querySelector(".hh").textContent=head;const [t,c]=stText(x);const stEl=li.querySelector(".st");stEl.textContent=t;if(c)stEl.classList.add(c);
     li.querySelector("button").onclick=()=>shareText(x.text);ul.appendChild(li)})}
-document.getElementById("saveBtn").onclick=saveReport;
-document.getElementById("shareBtn").onclick=()=>shareText(document.getElementById("report").value);
-window.addEventListener("online",syncQueue);
-document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")syncQueue()});
+$("saveBtn").onclick=saveReport;
+$("shareBtn").onclick=()=>shareText($("report").value);
+window.addEventListener("online",()=>{syncQueue();fetchCoach()});
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"){syncQueue();if(awakeWanted)keepAwake()}});
 
-// Настройки: ключ доставки
-function renderSettings(){const t=store.get("token","");const s=document.getElementById("keyState");
-  s.textContent=t?(lastErr==="badkey"?"Ключ сохранён, но GitHub его не принимает. Проверь доступ к fit-log и срок.":"Ключ сохранён на этом телефоне."):"Ключа нет — отчёты копятся на телефоне.";
-  document.getElementById("tokenIn").value="";document.getElementById("tokenIn").placeholder=t?"••••••••"+t.slice(-4):"github_pat_…"}
-document.getElementById("tokenSave").onclick=()=>{const v=document.getElementById("tokenIn").value.trim();if(!v)return;store.set("token",v);lastErr="";renderSettings();toast("Ключ сохранён");syncQueue()};
-document.getElementById("tokenDel").onclick=()=>{store.set("token","");renderSettings();renderHist()};
-document.getElementById("tokenTest").onclick=async()=>{const t=store.get("token","");const out=document.getElementById("testOut");
-  if(!t){out.textContent="Сначала вставь ключ.";return}out.textContent="Проверяю…";
-  try{await putFile(t,`reports/_test-${Date.now()}.md`,"проверка доставки\n","delivery test");out.textContent="Работает ✓ Отчёты будут уходить сами.";lastErr="";syncQueue()}
-  catch(e){out.textContent=e.message==="key"?"Ключ не подходит: нужен доступ к репо fit-log, Contents — Read and write.":"Нет связи с GitHub. Попробуй с интернетом."}};
+// ---------- Тренер ----------
+async function fetchCoach(){const t=store.get("token","");if(!t||!navigator.onLine)return;
+  try{const f=await getFile(t,"coach/next.json");if(!f)return;const c=JSON.parse(unb64(f.content));
+    const old=coach();store.set("coach",c);if(!old||old.updated!==c.updated){render()}}catch(e){}}
+function renderCoach(){const c=coach(),el=$("coachCard");if(!c||!c.note){el.hidden=true;return}
+  el.hidden=false;el.innerHTML='<div class="label">Тренер</div><p class="cnote"></p><p class="small muted cmeta"></p>';
+  el.querySelector(".cnote").textContent=c.note;el.querySelector(".cmeta").textContent=[c.week,c.updated?"обновлено "+ruDate(c.updated):""].filter(Boolean).join(" · ")}
 
-// Установка на главный экран
-let installEvt=null;
-window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installEvt=e;document.getElementById("installBox").hidden=false});
-document.getElementById("installBtn").onclick=async()=>{if(!installEvt)return;installEvt.prompt();await installEvt.userChoice;installEvt=null;document.getElementById("installBox").hidden=true};
-window.addEventListener("appinstalled",()=>{document.getElementById("installBox").hidden=true});
-if(!matchMedia("(display-mode: standalone)").matches&&!("onbeforeinstallprompt" in window)){document.getElementById("installHint").hidden=false}
-document.getElementById("tabs").addEventListener("click",e=>{
-  const b=e.target.closest("button");if(!b)return;
-  document.querySelectorAll("#tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
-  document.querySelectorAll("[data-view]").forEach(v=>v.hidden=v.dataset.view!==b.dataset.tab);
-});
-// таймеры
-let actx=null,wake=null;
+// ---------- Таймер отдыха и экран ----------
+let wake=null,awakeWanted=false;
+function keepAwake(){awakeWanted=true;try{if(!wake&&navigator.wakeLock)navigator.wakeLock.request("screen").then(w=>{wake=w;w.addEventListener("release",()=>wake=null)}).catch(()=>{})}catch(e){}}
+function releaseAwake(){awakeWanted=false;try{wake&&wake.release();wake=null}catch(e){}}
+let actx=null;
 function beep(f=880,ms=160){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=f;g.gain.value=.15;o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+ms/1000)}catch(e){} try{navigator.vibrate&&navigator.vibrate(ms)}catch(e){}}
 const fmt=s=>Math.floor(s/60)+":"+String(Math.floor(s%60)).padStart(2,"0");
-function makeTimer(p){
-  let t=null,steps=[],idx=0,end=0,total=0,t0=0;const el=id=>document.getElementById(p+id);
+const rest=(()=>{let t=null,end=0;const box=$("rest");
+  function tick(){const left=Math.max(0,(end-Date.now())/1000);$("restClock").textContent=fmt(Math.ceil(left));if(left<=0){stop();beep(1175,500);toast("Отдых закончился — следующий подход")}}
+  function start(sec,label){stop();end=Date.now()+sec*1000;$("restLabel").textContent=label;box.hidden=false;t=setInterval(tick,250);tick()}
+  function stop(){clearInterval(t);t=null;box.hidden=true}
+  $("restSkip").onclick=stop;$("restPlus").onclick=()=>{end+=30000;tick()};
+  return {start,stop}})();
+
+// ---------- Таймеры Кегеля и интервалов ----------
+function makeTimer(p,onDone){
+  let t=null,steps=[],idx=0,end=0,total=0,t0=0;const el=id=>$(p+id);
   function show(){const s=steps[idx];if(!s)return;const left=Math.max(0,(end-Date.now())/1000);
     el("Phase").textContent=s.label;el("Clock").textContent=fmt(Math.ceil(left));el("Info").textContent=s.info||"";
     el("Timer").className="timer "+(s.kind||"");el("Bar").style.width=Math.min(100,(Date.now()-t0)/total/10)+"%";
     if(left<=0){idx++;if(idx>=steps.length){stop(true);return}end=Date.now()+steps[idx].sec*1000;beep(steps[idx].kind==="work"?988:660)}}
-  function start(build){stop();steps=build();idx=0;total=steps.reduce((a,s)=>a+s.sec,0);t0=Date.now();end=t0+steps[0].sec*1000;beep();t=setInterval(show,200);show();
-    try{navigator.wakeLock&&navigator.wakeLock.request("screen").then(w=>wake=w).catch(()=>{})}catch(e){}}
-  function stop(fin){clearInterval(t);t=null;if(fin){el("Phase").textContent="Готово";el("Clock").textContent="0:00";el("Bar").style.width="100%";el("Timer").className="timer rest";beep(1175,400)}
-    try{wake&&wake.release();wake=null}catch(e){}}
+  function start(build){stop();steps=build();idx=0;total=steps.reduce((a,s)=>a+s.sec,0);t0=Date.now();end=t0+steps[0].sec*1000;beep();t=setInterval(show,200);show();keepAwake()}
+  function stop(fin){const was=!!t;clearInterval(t);t=null;releaseAwake();
+    if(fin){el("Phase").textContent="Готово";el("Clock").textContent="0:00";el("Bar").style.width="100%";el("Timer").className="timer rest";beep(1175,400);if(was&&onDone)onDone(Math.round(total/60))}}
   return {start,stop};
 }
 const KEG={"1":5,"2":8,"3":10};let kStage=store.get("kstage","1");
 function kBuild(){const h=KEG[kStage],a=[];for(let s=1;s<=3;s++){for(let r=1;r<=10;r++){a.push({label:"Сжать",sec:h,kind:"work",info:`подход ${s}/3 · ${r}/10`});a.push({label:"Расслабить",sec:5,kind:"rest",info:`подход ${s}/3 · ${r}/10`})}
   for(let q=1;q<=10;q++){a.push({label:"Быстро",sec:1,kind:"work",info:`быстрые ${q}/10`});a.push({label:"Отпустить",sec:1,kind:"rest",info:`быстрые ${q}/10`})}
   if(s<3)a.push({label:"Отдых",sec:30,kind:"rest",info:"обратный Кегель 10 раз"})}return a}
-function kInfo(){const t=kBuild().reduce((a,s)=>a+s.sec,0);document.getElementById("kInfo").textContent=`3 подхода по 10 × ${KEG[kStage]} с · ${Math.round(t/60)} мин`}
-const kT=makeTimer("k");
-document.getElementById("segKegel").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;kStage=b.dataset.v;store.set("kstage",kStage);press("segKegel",kStage);kInfo()});
+function kInfo(){const t=kBuild().reduce((a,s)=>a+s.sec,0);$("kInfo").textContent=`3 подхода по 10 × ${KEG[kStage]} с · ${Math.round(t/60)} мин`}
+function kegelDays(){return new Set(sessions().filter(s=>s.kind==="kegel"||s.kegel).map(s=>s.date))}
+function kegelStreak(){const days=kegelDays();let n=0;const d=new Date();if(!days.has(today()))d.setDate(d.getDate()-1);
+  for(;;){const iso=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;if(!days.has(iso))break;n++;d.setDate(d.getDate()-1)}return n}
+function renderStreak(){const n=kegelStreak();$("kStreak").textContent=n?`Дней подряд: ${n}${kegelDays().has(today())?" · сегодня сделано ✓":" · сегодня ещё нет"}`:"Сегодня первый день — поехали."}
+function markKegel(send,min){
+  $("kegelToday").checked=true;store.set("x:kegelToday",true);report();
+  if(send){const s={id:today()+"T"+new Date().toTimeString().slice(0,5)+"-kegel",date:today(),kind:"kegel",stage:+kStage,min,text:`отчёт fit ${ruDate(today())}: Кегель (этап ${kStage}, ${min} мин) ✓`};
+    addSession(s);queue(s);toast("Кегель записан ✓")}
+  renderStreak();renderProgress()}
+const kT=makeTimer("k",min=>markKegel(true,min));
+$("segKegel").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;kStage=b.dataset.v;store.set("kstage",kStage);press("segKegel",kStage);kInfo()});
 press("segKegel",kStage);kInfo();
-document.getElementById("kStart").onclick=()=>kT.start(kBuild);document.getElementById("kStop").onclick=()=>kT.stop();
+$("kStart").onclick=()=>kT.start(kBuild);$("kStop").onclick=()=>kT.stop();
 let hiit=store.get("hiit","4x4");
 function iBuild(){const a=[{label:"Разминка",sec:600,kind:"rest",info:"легко, пульс 100–120"}];
   if(hiit==="4x4"){for(let i=1;i<=4;i++){a.push({label:"Работа",sec:240,kind:"work",info:`${i} из 4 · пульс 160–180`});if(i<4)a.push({label:"Легко",sec:180,kind:"rest",info:`отдых после ${i}-го`})}}
   else{for(let i=1;i<=15;i++){a.push({label:"Работа",sec:30,kind:"work",info:`${i} из 15`});a.push({label:"Легко",sec:30,kind:"rest",info:`${i} из 15`})}}
   a.push({label:"Заминка",sec:300,kind:"rest",info:"легко"});return a}
-function iInfo(){const t=iBuild().reduce((a,s)=>a+s.sec,0);document.getElementById("iInfo").textContent=`всего ${Math.round(t/60)} мин с разминкой`}
-const iT=makeTimer("i");
-document.getElementById("segHiit").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;hiit=b.dataset.v;store.set("hiit",hiit);press("segHiit",hiit);iInfo()});
+function iInfo(){const t=iBuild().reduce((a,s)=>a+s.sec,0);$("iInfo").textContent=`всего ${Math.round(t/60)} мин с разминкой`}
+const iT=makeTimer("i",min=>{const name=hiit==="4x4"?"4×4":"30/30";
+  const s={id:today()+"T"+new Date().toTimeString().slice(0,5)+"-bike",date:today(),kind:"bike",proto:hiit,min,text:`отчёт fit ${ruDate(today())}: Вело-интервалы ${name} ✓, ${min} мин`};
+  addSession(s);queue(s);renderProgress();toast("Интервалы записаны ✓")});
+$("segHiit").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;hiit=b.dataset.v;store.set("hiit",hiit);press("segHiit",hiit);iInfo()});
 press("segHiit",hiit);iInfo();
-document.getElementById("iStart").onclick=()=>iT.start(iBuild);document.getElementById("iStop").onclick=()=>iT.stop();
-render();renderHist();renderSettings();syncQueue();
+$("iStart").onclick=()=>iT.start(iBuild);$("iStop").onclick=()=>iT.stop();
+
+// ---------- Прогресс ----------
+const LIFTS=[["squat","Присед",["squat","goblet"]],["thrust","Хип-траст",["thrust"]],["trap","Становая",["trap"]],["rdl","Румынская",["rdl","hingeHome"]]];
+let liftSel=store.get("liftSel","squat");
+function lineChart(pts,unit){
+  if(pts.length<2)return `<p class="small muted">${pts.length?`Пока одна точка: ${fmtKg(pts[0].y)} ${unit}. График появится после второй тренировки.`:"Пока нет данных."}</p>`;
+  const W=320,H=150,L=34,R=10,T=12,B=24;const ys=pts.map(p=>p.y);let lo=Math.min(...ys),hi=Math.max(...ys);if(hi-lo<1){lo-=1;hi+=1}
+  const pad2=(hi-lo)*.15;lo-=pad2;hi+=pad2;const x=i=>L+(W-L-R)*i/(pts.length-1),y=v=>T+(H-T-B)*(1-(v-lo)/(hi-lo));
+  const ticks=[lo+(hi-lo)*.15,(lo+hi)/2,hi-(hi-lo)*.15];
+  const path=pts.map((p,i)=>(i?"L":"M")+x(i).toFixed(1)+" "+y(p.y).toFixed(1)).join(" ");
+  const area=path+` L${x(pts.length-1).toFixed(1)} ${H-B} L${L} ${H-B} Z`;
+  const lp=pts[pts.length-1];
+  return `<svg viewBox="0 0 ${W} ${H}" class="chart" role="img" aria-label="график">${ticks.map(v=>`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" class="grid"/><text x="${L-4}" y="${y(v)+4}" class="ax" text-anchor="end">${Math.round(v*10)/10}</text>`).join("")}
+    <path d="${area}" class="area"/><path d="${path}" class="ln"/>${pts.map((p,i)=>`<circle cx="${x(i)}" cy="${y(p.y)}" r="${i===pts.length-1?4:2.5}" class="pt"/>`).join("")}
+    <text x="${L}" y="${H-6}" class="ax">${ruDate(pts[0].d).slice(0,5)}</text><text x="${W-R}" y="${H-6}" class="ax" text-anchor="end">${ruDate(lp.d).slice(0,5)}</text></svg>
+    <p class="small muted">Сейчас ${fmtKg(lp.y)} ${unit}, было ${fmtKg(pts[0].y)} ${unit} (${lp.y-pts[0].y>=0?"+":""}${fmtKg(lp.y-pts[0].y)})</p>`;
+}
+function weekStart(iso){const d=new Date(iso+"T12:00:00");const wd=(d.getDay()+6)%7;d.setDate(d.getDate()-wd);return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
+function renderProgress(){
+  const all=sessions();press("segLift",liftSel);
+  const keys=(LIFTS.find(l=>l[0]===liftSel)||LIFTS[0])[2];
+  const pts=all.filter(s=>s.kind==="workout").map(s=>{const sets=(s.ex||[]).filter(x=>keys.includes(x.k)).flatMap(x=>x.sets||[]);const kg=Math.max(0,...sets.map(t=>+t.kg||0));return kg?{d:s.date,y:kg}:null}).filter(Boolean);
+  $("liftChart").innerHTML=lineChart(pts,"кг");
+  const bw=all.filter(s=>s.bw).map(s=>({d:s.date,y:+s.bw}));$("bwChart").innerHTML=lineChart(bw,"кг");
+  // тренировки в неделю, 8 недель
+  const cur=weekStart(today());const weeks=[];for(let i=7;i>=0;i--){const d=new Date(cur+"T12:00:00");d.setDate(d.getDate()-7*i);weeks.push(`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`)}
+  const cnt=weeks.map(w=>all.filter(s=>(s.kind==="workout"||s.kind==="bike")&&weekStart(s.date)===w).length);const mx=Math.max(5,...cnt);
+  $("weekChart").innerHTML=`<svg viewBox="0 0 320 120" class="chart" role="img" aria-label="тренировок в неделю">${cnt.map((c,i)=>{const h=80*c/mx,x=12+i*38;return `<rect x="${x}" y="${92-h}" width="26" height="${Math.max(h,1)}" rx="3" class="${i===7?"bar now":"bar"}"/><text x="${x+13}" y="${86-h}" text-anchor="middle" class="ax">${c||""}</text><text x="${x+13}" y="110" text-anchor="middle" class="ax">${ruDate(weeks[i]).slice(0,5)}</text>`}).join("")}<line x1="8" x2="312" y1="92" y2="92" class="grid"/><line x1="8" x2="312" y1="${92-80*3/mx}" y2="${92-80*3/mx}" class="goal"/></svg><p class="small muted">Пунктир — цель минимум 3 в неделю.</p>`;
+  // Кегель 28 дней
+  const days=kegelDays();let cells="";const d0=new Date();d0.setDate(d0.getDate()-27);
+  for(let i=0;i<28;i++){const d=new Date(d0);d.setDate(d0.getDate()+i);const iso=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;cells+=`<span class="kc${days.has(iso)?" on":""}${iso===today()?" td":""}" title="${ruDate(iso)}"></span>`}
+  $("kegelGrid").innerHTML=cells;$("kegelSum").textContent=`За 28 дней: ${[...days].filter(x=>x>=`${d0.getFullYear()}-${pad(d0.getMonth()+1)}-${pad(d0.getDate())}`).length} · дней подряд: ${kegelStreak()}`;
+  $("progEmpty").hidden=all.length>0;
+}
+$("segLift").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;liftSel=b.dataset.v;store.set("liftSel",liftSel);renderProgress()});
+$("restoreBtn").onclick=async()=>{const t=store.get("token","");const out=$("restoreOut");if(!t){out.textContent="Сначала вставь ключ в «Настройках».";return}
+  out.textContent="Загружаю отчёты…";
+  try{const r=await fetch(`https://api.github.com/repos/${REPO}/contents/reports`,{headers:ghHeaders(t),cache:"no-store"});if(!r.ok)throw new Error(r.status===401||r.status===403?"key":"net");
+    const files=(await r.json()).filter(f=>f.name.endsWith(".md")&&!f.name.startsWith("_"));let n=0;const have=new Set(sessions().map(s=>s.id));
+    for(const f of files){const j=await getFile(t,"reports/"+f.name);if(!j)continue;const m=unb64(j.content).match(/```json\n([\s\S]*?)\n```/);if(!m)continue;
+      try{const s=JSON.parse(m[1]);if(s.id&&!have.has(s.id)){addSession(s);n++}}catch(e){}}
+    out.textContent=n?`Восстановил ${n} записей.`:"Новых записей нет — всё уже на телефоне.";renderProgress();renderStreak();render()}
+  catch(e){out.textContent=e.message==="key"?"Ключ не подходит.":"Нет связи с GitHub."}};
+
+// ---------- Вкладки ----------
+function seg(id,f){$(id).addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;st[f]=b.dataset.v;store.set(f,st[f]);render()})}
+seg("segPlace","place");seg("segDay","day");
+$("tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+  document.querySelectorAll("#tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
+  document.querySelectorAll("[data-view]").forEach(v=>v.hidden=v.dataset.view!==b.dataset.tab);
+  if(b.dataset.tab==="progress")renderProgress();if(b.dataset.tab==="kegel")renderStreak()});
+
+// ---------- Настройки ----------
+function renderSettings(){const t=store.get("token","");const s=$("keyState");
+  s.textContent=t?(lastErr==="badkey"?"Ключ сохранён, но GitHub его не принимает. Проверь доступ к fit-log и срок.":"Ключ сохранён на этом телефоне."):"Ключа нет — отчёты копятся на телефоне.";
+  $("tokenIn").value="";$("tokenIn").placeholder=t?"••••••••"+t.slice(-4):"github_pat_…";$("barIn").value=store.get("bar",20)}
+$("tokenSave").onclick=()=>{const v=$("tokenIn").value.trim();if(!v)return;store.set("token",v);lastErr="";renderSettings();toast("Ключ сохранён");syncQueue();fetchCoach()};
+$("tokenDel").onclick=()=>{store.set("token","");renderSettings();renderHist()};
+$("barIn").oninput=()=>{const v=parseFloat($("barIn").value.replace(",","."));if(v>0){store.set("bar",v);render()}};
+$("tokenTest").onclick=async()=>{const t=store.get("token","");const out=$("testOut");if(!t){out.textContent="Сначала вставь ключ.";return}out.textContent="Проверяю…";
+  try{await putFile(t,`reports/_test-${Date.now()}.md`,"проверка доставки\n","delivery test");out.textContent="Работает ✓ Отчёты будут уходить сами.";lastErr="";syncQueue();fetchCoach()}
+  catch(e){out.textContent=e.message==="key"?"Ключ не подходит: нужен доступ к репо fit-log, Contents — Read and write.":"Нет связи с GitHub. Попробуй с интернетом."}};
+
+// ---------- Установка ----------
+let installEvt=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installEvt=e;$("installBox").hidden=false});
+$("installBtn").onclick=async()=>{if(!installEvt)return;installEvt.prompt();await installEvt.userChoice;installEvt=null;$("installBox").hidden=true};
+window.addEventListener("appinstalled",()=>{$("installBox").hidden=true});
+if(!matchMedia("(display-mode: standalone)").matches&&!("onbeforeinstallprompt" in window)){$("installHint").hidden=false}
+
+// старт
+// старые записи из v3 (свободный текст) больше не нужны
+try{Object.keys(localStorage).filter(k=>k.startsWith("fit2:log:")).forEach(k=>localStorage.removeItem(k))}catch(e){}
+render();renderHist();renderSettings();renderStreak();syncQueue();fetchCoach();
 if("serviceWorker" in navigator&&location.protocol!=="file:"){navigator.serviceWorker.register("sw.js").catch(()=>{})}
+
 </script>
 </body>
 </html>

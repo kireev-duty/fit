@@ -3,6 +3,9 @@
 A small offline-first workout app for the phone: legs, glutes, core, pelvic floor and bike intervals.
 
 - Today's workout (A → B → C rotation, gym or home) with start/end photos and technique cues for every exercise
+- Set logging with +/− buttons, last-session prefill, double-progression hints, rest timer, plate calculator and warm-up sets
+- Progress charts (working weight, body weight, sessions per week, Kegel streak) drawn as plain SVG
+- Coach notes and per-exercise targets read from the private repo (`coach/next.json`)
 - Kegel and 4×4 / 30-30 interval timers with sound
 - One-tap workout report shared to any messenger
 - Works without internet after the first visit (service worker), installable to the home screen
