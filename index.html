@@ -24,6 +24,7 @@
   --bg:#0f131b; --panel:#171d28; --fg:#e8ecf3; --muted:#9aa4b6; --line:#2a3242;
   --accent:#6f93ff; --accent-ink:#0b0f17; --hr:#ff6b5e; --ok:#4cc38a; --soft:#1e2738; color-scheme:dark}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 var(--f-body);
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
@@ -64,7 +65,7 @@ details.help ol{margin:10px 0 0;padding-left:20px;display:flex;flex-direction:co
 .err{font-size:13.5px;border-left:3px solid var(--hr);padding-left:10px}
 .feel{font-size:13.5px;color:var(--muted)}
 .logrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.logrow input[type=text]{flex:1 1 180px;min-width:0;font:15px var(--f-mono);padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)}
+.logrow input[type=text],.logrow input[type=password]{flex:1 1 180px;min-width:0;font:15px var(--f-mono);padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)}
 .chk{display:flex;gap:6px;align-items:center;font-weight:600;font-size:14px;cursor:pointer}
 .chk input{width:20px;height:20px;accent-color:var(--ok)}
 a{color:var(--accent)}
@@ -109,7 +110,14 @@ ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
     <button role="tab" data-tab="kegel" aria-selected="false">Кегель</button>
     <button role="tab" data-tab="intervals" aria-selected="false">Вело-интервалы</button>
     <button role="tab" data-tab="plan" aria-selected="false">План и еда</button>
+    <button role="tab" data-tab="settings" aria-selected="false">Настройки</button>
   </nav>
+
+  <div class="panel" id="installBox" hidden>
+    <p><b>Поставь fit как приложение</b> — иконка на экране, работает без интернета.</p>
+    <div class="row"><button class="btn" id="installBtn">Установить</button></div>
+  </div>
+  <p class="small muted" id="installHint" hidden>Чтобы работало без интернета: меню браузера ⋮ → «Добавить на главный экран».</p>
 
   <!-- ТРЕНИРОВКА -->
   <section data-view="today" style="display:flex;flex-direction:column;gap:14px">
@@ -120,7 +128,7 @@ ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
         <li>Выбери <b>Зал</b> или <b>Дом</b>. Упражнения сверху вниз, по порядку.</li>
         <li><b>«3 × 8–12»</b> = 3 подхода, в каждом 8–12 повторов. Вес подбирай так, чтобы в конце подхода оставалось ещё 2 повтора в запасе. Если все подходы легко на 12 — в следующий раз вес чуть больше.</li>
         <li>Между подходами отдых 1,5–2 мин, на первом упражнении 2–3 мин.</li>
-        <li>В поле под упражнением пиши вес и повторы: <span class="num">40×10,10,8</span>. В конце нажми <b>«Отправить в Telegram»</b> и выбери группу, тему «Здоровье». Без интернета тоже можно: Telegram отправит, когда появится сеть.</li>
+        <li>В поле под упражнением пиши вес и повторы: <span class="num">40×10,10,8</span>. В конце нажми <b>«Сохранить тренировку»</b>. Без интернета тоже можно: отчёт уйдёт сам, когда появится сеть.</li>
         <li>На часах запусти тренировку «Силовая» (или «Велотренажёр») — так пульс попадёт в Zepp.</li>
       </ol>
     </details>
@@ -147,17 +155,16 @@ ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
       </div>
       <textarea id="report" readonly aria-label="Текст отчёта"></textarea>
       <div class="row">
-        <button class="btn" id="shareBtn">Отправить в Telegram</button>
-        <button class="btn ghost" id="copyBtn">Скопировать</button>
+        <button class="btn" id="saveBtn">Сохранить тренировку</button>
+        <button class="btn ghost" id="shareBtn">В Telegram</button>
         <span class="toast" id="toast" hidden></span>
       </div>
-      <p class="small muted">Выбери Telegram → свою группу → тема «Здоровье». После отправки нажми «Готово» — откроется следующая тренировка.</p>
-      <div class="row"><button class="btn ghost" id="finishBtn">Готово, следующая тренировка →</button></div>
+      <p class="small muted">«Сохранить» — отчёт уйдёт сам, как только будет интернет, и откроется следующая тренировка. Telegram — запасной вариант.</p>
     </div>
 
     <div class="panel">
       <h3>Мои отчёты</h3>
-      <p class="small muted" id="histEmpty">Здесь будут последние 30 отчётов. Если что-то не дошло — отправь ещё раз.</p>
+      <p class="small muted" id="histEmpty">Здесь будут последние 30 отчётов и дошли ли они.</p>
       <ul class="hist" id="hist"></ul>
     </div>
   </section>
@@ -225,6 +232,26 @@ ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
     </ul>
     <p class="warn">Сон 7–9 ч, мало алкоголя и без курения дают больше любой добавки. Бустеры «для потенции» не работают.</p>
     <p class="small muted">Фото упражнений: открытая база <a href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noopener">free-exercise-db</a> (общественное достояние). Работает без интернета после первого открытия.</p>
+  </section>
+
+  <!-- НАСТРОЙКИ -->
+  <section data-view="settings" class="panel" hidden>
+    <h2>Ключ доставки отчётов</h2>
+    <p>С ключом отчёты сами уходят в твой приватный репозиторий <span class="num">fit-log</span>, а Claude забирает их оттуда. Ключ хранится только на этом телефоне.</p>
+    <details class="help">
+      <summary>Как получить ключ (3 минуты, один раз)</summary>
+      <ol>
+        <li>Открой <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com → новый fine-grained token</a> (войди в kireev-duty).</li>
+        <li>Token name: <span class="num">fit-phone</span>, Expiration: 1 год.</li>
+        <li>Repository access: <b>Only select repositories</b> → <span class="num">fit-log</span>.</li>
+        <li>Permissions → Repository → <b>Contents: Read and write</b>. Остальное не трогай.</li>
+        <li>Generate token → скопируй → вставь ниже → «Сохранить ключ» → «Проверить доставку».</li>
+      </ol>
+    </details>
+    <p class="small muted" id="keyState"></p>
+    <div class="logrow"><input type="password" id="tokenIn" autocomplete="off" aria-label="Ключ доставки"><button class="btn" id="tokenSave">Сохранить ключ</button></div>
+    <div class="row"><button class="btn ghost" id="tokenTest">Проверить доставку</button><button class="btn ghost" id="tokenDel">Удалить ключ</button></div>
+    <p class="small" id="testOut"></p>
   </section>
 </div>
 
@@ -324,25 +351,75 @@ function toast(t){const el=document.getElementById("toast");el.textContent=t;el.
 function copyText(t){const ta=document.getElementById("report");
   const fallback=()=>{ta.focus();ta.select();toast("Выделил — скопируй вручную")};
   try{navigator.clipboard.writeText(t).then(()=>toast("Скопировано"),fallback)}catch(e){fallback()}}
-function addHist(text,sent){const h=store.get("hist",[]);const head=text.split("\n")[0];
-  const i=h.findIndex(x=>x.text.split("\n")[0]===head);const item={text,sent:sent||(i>=0&&h[i].sent),at:Date.now()};
-  if(i>=0)h.splice(i,1);h.unshift(item);store.set("hist",h.slice(0,30));renderHist()}
-function shareText(text){
-  if(navigator.share){navigator.share({text}).then(()=>{addHist(text,true);toast("Отправлено")}).catch(err=>{if(err&&err.name==="AbortError")return;addHist(text,false);copyText(text)})}
-  else{addHist(text,false);copyText(text)}}
-function renderHist(){const h=store.get("hist",[]),ul=document.getElementById("hist");ul.innerHTML="";
-  document.getElementById("histEmpty").hidden=h.length>0;
-  h.forEach(x=>{const li=document.createElement("li");const head=x.text.split("\n")[0].replace(/^отчёт fit /,"");
-    li.innerHTML='<div><div class="hh"></div><div class="st"></div></div><button type="button">Отправить ещё раз</button>';
-    li.querySelector(".hh").textContent=head;const stEl=li.querySelector(".st");stEl.textContent=x.sent?"отправлен":"не отправлен";if(x.sent)stEl.classList.add("sent");
-    li.querySelector("button").onclick=()=>shareText(x.text);ul.appendChild(li)})}
-document.getElementById("shareBtn").onclick=()=>shareText(document.getElementById("report").value);
-document.getElementById("copyBtn").onclick=()=>{const t=document.getElementById("report").value;addHist(t,false);copyText(t)};
-document.getElementById("finishBtn").onclick=()=>{
+
+// Доставка отчётов: очередь на телефоне → приватный репо на GitHub, когда есть сеть
+const REPO="kireev-duty/fit-log";
+const pad=n=>String(n).padStart(2,"0");
+function fileName(day){const d=new Date();return `reports/${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}-${day}.md`}
+function b64(s){const bytes=new TextEncoder().encode(s);let bin="";bytes.forEach(b=>bin+=String.fromCharCode(b));return btoa(bin)}
+function getHist(){return store.get("hist",[]).map(x=>x.file||x.delivered!==undefined?x:{...x,file:null,delivered:false})}
+function setHist(h){store.set("hist",h.slice(0,30));renderHist()}
+let syncing=false,lastErr="";
+async function putFile(token,path,text,msg){
+  const r=await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURI(path)}`,{method:"PUT",
+    headers:{"Authorization":"Bearer "+token,"Accept":"application/vnd.github+json","Content-Type":"application/json"},
+    body:JSON.stringify({message:msg,content:b64(text)})});
+  if(r.status===201||r.status===200||r.status===422)return true; // 422: файл уже есть — значит доставлен раньше
+  if(r.status===401||r.status===403||r.status===404)throw new Error("key");
+  throw new Error("net");
+}
+async function syncQueue(){
+  const token=store.get("token","");const h=getHist();
+  if(!h.some(x=>x.file&&!x.delivered)){renderHist();return}
+  if(!token){lastErr="nokey";renderHist();return}
+  if(!navigator.onLine){lastErr="offline";renderHist();return}
+  if(syncing)return;syncing=true;lastErr="";
+  try{for(const x of h){if(!x.file||x.delivered)continue;
+      await putFile(token,x.file,x.text+"\n","report "+x.file.slice(8,-3));x.delivered=true;setHist(h)}}
+  catch(e){lastErr=e.message==="key"?"badkey":"offline"}
+  finally{syncing=false;renderHist();renderSettings()}
+}
+function saveReport(){
+  const text=document.getElementById("report").value;const h=getHist();
+  h.unshift({text,file:fileName(st.day),delivered:false,at:Date.now()});setHist(h);
   store.set("log:"+st.day+":"+st.place,{});["kegelToday","bodyW","mood"].forEach(id=>store.set("x:"+id,id==="kegelToday"?false:""));
   document.getElementById("kegelToday").checked=false;document.getElementById("bodyW").value="";document.getElementById("mood").value="";
   const i=ORDER.indexOf(st.day);st.day=i<0?"A":ORDER[(i+1)%3];store.set("day",st.day);render();window.scrollTo(0,0);
-};
+  toast(store.get("token","")?"Сохранено, отправляю":"Сохранено. Добавь ключ в «Настройках», чтобы отчёты уходили сами");
+  syncQueue();
+}
+function shareText(text){if(navigator.share){navigator.share({text}).catch(()=>{})}else copyText(text)}
+function stText(x){if(!x.file)return["в Telegram/копия",""];if(x.delivered)return["доставлен ✓","sent"];
+  if(lastErr==="nokey")return["ждёт ключа — см. Настройки",""];if(lastErr==="badkey")return["ключ не подходит — см. Настройки",""];
+  return["ждёт интернета",""]}
+function renderHist(){const h=getHist(),ul=document.getElementById("hist");ul.innerHTML="";
+  document.getElementById("histEmpty").hidden=h.length>0;
+  h.forEach(x=>{const li=document.createElement("li");const head=x.text.split("\n")[0].replace(/^отчёт fit /,"");
+    li.innerHTML='<div><div class="hh"></div><div class="st"></div></div><button type="button">В Telegram</button>';
+    li.querySelector(".hh").textContent=head;const [t,c]=stText(x);const stEl=li.querySelector(".st");stEl.textContent=t;if(c)stEl.classList.add(c);
+    li.querySelector("button").onclick=()=>shareText(x.text);ul.appendChild(li)})}
+document.getElementById("saveBtn").onclick=saveReport;
+document.getElementById("shareBtn").onclick=()=>shareText(document.getElementById("report").value);
+window.addEventListener("online",syncQueue);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")syncQueue()});
+
+// Настройки: ключ доставки
+function renderSettings(){const t=store.get("token","");const s=document.getElementById("keyState");
+  s.textContent=t?(lastErr==="badkey"?"Ключ сохранён, но GitHub его не принимает. Проверь доступ к fit-log и срок.":"Ключ сохранён на этом телефоне."):"Ключа нет — отчёты копятся на телефоне.";
+  document.getElementById("tokenIn").value="";document.getElementById("tokenIn").placeholder=t?"••••••••"+t.slice(-4):"github_pat_…"}
+document.getElementById("tokenSave").onclick=()=>{const v=document.getElementById("tokenIn").value.trim();if(!v)return;store.set("token",v);lastErr="";renderSettings();toast("Ключ сохранён");syncQueue()};
+document.getElementById("tokenDel").onclick=()=>{store.set("token","");renderSettings();renderHist()};
+document.getElementById("tokenTest").onclick=async()=>{const t=store.get("token","");const out=document.getElementById("testOut");
+  if(!t){out.textContent="Сначала вставь ключ.";return}out.textContent="Проверяю…";
+  try{await putFile(t,`reports/_test-${Date.now()}.md`,"проверка доставки\n","delivery test");out.textContent="Работает ✓ Отчёты будут уходить сами.";lastErr="";syncQueue()}
+  catch(e){out.textContent=e.message==="key"?"Ключ не подходит: нужен доступ к репо fit-log, Contents — Read and write.":"Нет связи с GitHub. Попробуй с интернетом."}};
+
+// Установка на главный экран
+let installEvt=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installEvt=e;document.getElementById("installBox").hidden=false});
+document.getElementById("installBtn").onclick=async()=>{if(!installEvt)return;installEvt.prompt();await installEvt.userChoice;installEvt=null;document.getElementById("installBox").hidden=true};
+window.addEventListener("appinstalled",()=>{document.getElementById("installBox").hidden=true});
+if(!matchMedia("(display-mode: standalone)").matches&&!("onbeforeinstallprompt" in window)){document.getElementById("installHint").hidden=false}
 document.getElementById("tabs").addEventListener("click",e=>{
   const b=e.target.closest("button");if(!b)return;
   document.querySelectorAll("#tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
@@ -383,7 +460,7 @@ const iT=makeTimer("i");
 document.getElementById("segHiit").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;hiit=b.dataset.v;store.set("hiit",hiit);press("segHiit",hiit);iInfo()});
 press("segHiit",hiit);iInfo();
 document.getElementById("iStart").onclick=()=>iT.start(iBuild);document.getElementById("iStop").onclick=()=>iT.stop();
-render();renderHist();
+render();renderHist();renderSettings();syncQueue();
 if("serviceWorker" in navigator&&location.protocol!=="file:"){navigator.serviceWorker.register("sw.js").catch(()=>{})}
 </script>
 </body>

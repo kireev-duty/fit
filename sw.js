@@ -1,5 +1,5 @@
 // Offline cache: everything is saved on install, then served cache-first.
-const CACHE = "fit-v1";
+const CACHE = "fit-v3";
 const IMGS = ["Ab_Roller","Barbell_Hip_Thrust","Barbell_Squat","Dead_Bug","Dips_-_Triceps_Version","Dumbbell_Bench_Press",
   "Dumbbell_Lunges","Dumbbell_Rear_Lunge","Goblet_Squat","Hanging_Leg_Raise","Kneeling_Hip_Flexor","Leg_Press",
   "One-Arm_Dumbbell_Row","One_Leg_Barbell_Squat","Pallof_Press","Pullups","Push-Ups_-_Close_Triceps_Position","Pushups",
@@ -19,7 +19,8 @@ self.addEventListener("activate", e => {
 });
 
 self.addEventListener("fetch", e => {
-  if (e.request.method !== "GET") return;
+  // only our own files; GitHub API calls go straight to the network
+  if (e.request.method !== "GET" || new URL(e.request.url).origin !== location.origin) return;
   e.respondWith(
     caches.match(e.request, { ignoreSearch: true }).then(hit => hit || fetch(e.request).then(res => {
       if (res.ok && new URL(e.request.url).origin === location.origin) {
